@@ -2,6 +2,33 @@
 
 This repository contains comprehensive revision materials for a 10-week System Design course covering both Low-Level Design (LLD) and High-Level Design (HLD). The content has been carefully structured into focused, digestible modules with step-by-step execution traces.
 
+## Quick Start - Learning Management System (LMS)
+
+The best way to learn this course is through the custom-built web-based LMS with progress tracking, YouTube videos, and interactive features.
+
+### Start the LMS in 2 Commands
+
+```bash
+cd lms
+./setup_all.sh      # One-time setup
+./start_lms.sh      # Start the LMS
+```
+
+Then open **http://localhost:3000** in your browser.
+
+### LMS Features
+
+- **Progress Tracking**: Track completion, time spent, and learning streaks
+- **116 YouTube Videos**: Curated reference videos from top channels
+- **31 Lessons**: 17h 48m of content with automatic time estimates
+- **Auto-Save Notes**: Take notes that save automatically
+- **Bookmarks**: Mark favorite lessons
+- **Dark Mode**: Easy on the eyes
+- **Responsive Design**: Works on mobile, tablet, and desktop
+- **Search & Filter**: Find lessons quickly
+
+See [lms/README.md](./lms/README.md) for complete LMS documentation.
+
 ## What Makes This Different
 
 Every concept in this guide follows a consistent approach:
@@ -222,7 +249,28 @@ HLD/week5/
 
 ## How to Use This Guide
 
-### For Self-Study
+### Option 1: Use the LMS (Recommended)
+
+The interactive Learning Management System provides the best learning experience:
+
+```bash
+cd lms
+./setup_all.sh
+./start_lms.sh
+```
+
+Features:
+- Progress tracking with completion percentages
+- Time estimates for each lesson
+- 116 curated YouTube reference videos
+- Auto-save notes
+- Bookmarks for important lessons
+- Search and filter functionality
+- Dark mode support
+
+### Option 2: Browse Markdown Files
+
+For self-study without the LMS:
 
 1. **Start with the concept**: Read `concept.md` to understand the problem being solved
 2. **Study the code**: Examine `example.py` to see the solution in action
@@ -262,11 +310,29 @@ python HLD/week2/caching/eviction/lru/example.py
 
 ## Content Statistics
 
-- **Total Files**: 100+ focused modules
-- **Lines of Code**: 65,000+ lines of Python and documentation
+- **Total Files**: 250+ focused modules
+- **Lines of Code**: 90,000+ lines of Python and documentation
 - **Design Patterns**: 30+ patterns with implementations
 - **System Designs**: 10+ complete systems
 - **Dry Runs**: Step-by-step traces for every major concept
+- **YouTube Videos**: 116 curated educational videos
+- **Total Learning Time**: 17h 48m of content
+
+## LMS Technology Stack
+
+The LMS is built with modern web technologies:
+
+**Backend:**
+- Flask (Python web framework)
+- SQLite (Database)
+- REST API with 18 endpoints
+
+**Frontend:**
+- Next.js 14 (React framework)
+- TypeScript (Type safety)
+- Tailwind CSS (Styling)
+- shadcn/ui (UI components)
+- Chart.js (Progress visualization)
 
 ## Learning Path
 
@@ -279,11 +345,70 @@ Focus on LLD Week 4 system designs and HLD Weeks 3-4 for database and API concep
 ### Advanced Track (Weeks 8-10)
 Master LLD Week 5 advanced designs and HLD Week 5 real-world architectures. Practice explaining trade-offs.
 
+## YouTube Videos
+
+116 curated videos from top educational channels:
+
+- **ByteByteGo** (18 videos) - System design interviews
+- **Gaurav Sen** (30 videos) - Distributed systems
+- **Hussein Nasser** (16 videos) - Backend engineering
+- **freeCodeCamp** (10 videos) - Comprehensive tutorials
+- **Programming with Mosh** (6 videos) - OOP concepts
+- **ArjanCodes** (13 videos) - Design patterns in Python
+- **Tech Dummies** (13 videos) - System design fundamentals
+- **System Design Interview** (4 videos) - Interview preparation
+
+Videos are integrated into the LMS and cover all major topics.
+
+## Repository Structure
+
+```
+.
+├── LLD/                  # Low-Level Design content
+│   ├── week1/           # OOP & SOLID
+│   ├── week2/           # Creational & Behavioral patterns
+│   ├── week3/           # Structural patterns
+│   ├── week4/           # System design examples
+│   └── week5/           # Advanced designs
+├── HLD/                  # High-Level Design content
+│   ├── week1/           # Networking & Protocols
+│   ├── week2/           # Scaling & Caching
+│   ├── week3/           # Databases & Storage
+│   ├── week4/           # APIs & Security
+│   └── week5/           # Real-world systems
+└── lms/                  # Learning Management System
+    ├── backend/         # Flask API + SQLite
+    ├── frontend/        # Next.js application
+    ├── setup_all.sh     # One-command setup
+    ├── start_lms.sh     # Start both servers
+    └── README.md        # LMS documentation
+```
+
 ## Additional Resources
 
+- `lms/README.md` - Complete LMS documentation
+- `lms/QUICK_START.md` - Quick start guide for LMS
 - `REFACTORING_PLAN.md` - Details about the content organization approach
 - Each week's README.md - Week-specific learning guides
 - `**/dry_run.md` files - Detailed execution traces
+
+## Getting Started
+
+### Using the LMS (Recommended)
+
+```bash
+cd lms
+./setup_all.sh      # First time setup
+./start_lms.sh      # Start the LMS
+```
+
+Open **http://localhost:3000** in your browser and start learning!
+
+### Reading Markdown Files
+
+Begin your journey with [LLD Week 1: Object-Oriented Fundamentals](./LLD/week1/).
+
+The first concept to explore is [Encapsulation](./LLD/week1/oop-fundamentals/encapsulation/concept.md), which introduces the idea of protecting data and controlling how it's accessed. This fundamental concept appears throughout software design, from simple classes to entire distributed systems.
 
 ## Contributing
 
@@ -293,8 +418,6 @@ This content follows specific guidelines:
 - Tone is explanatory and curiosity-driven
 - No unnecessary embellishments in the documentation
 
-## Getting Started
+## License
 
-Begin your journey with [LLD Week 1: Object-Oriented Fundamentals](./LLD/week1/).
-
-The first concept to explore is [Encapsulation](./LLD/week1/oop-fundamentals/encapsulation/concept.md), which introduces the idea of protecting data and controlling how it's accessed. This fundamental concept appears throughout software design, from simple classes to entire distributed systems.
+Educational content for System Design learning.
