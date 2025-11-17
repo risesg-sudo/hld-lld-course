@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Design Course - Learning Management System</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Highlight.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Chart.js for progress visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.2s ease;
+        }
+
+        /* Code block styling */
+        pre {
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        /* Content styling */
+        .lesson-content h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 1.5rem 0 1rem 0;
+            color: #f9fafb;
+        }
+        .lesson-content h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1.25rem 0 0.75rem 0;
+            color: #e5e7eb;
+        }
+        .lesson-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem 0;
+            color: #d1d5db;
+        }
+        .lesson-content p {
+            margin: 0.75rem 0;
+            line-height: 1.75;
+            color: #d1d5db;
+        }
+        .lesson-content ul, .lesson-content ol {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+            color: #d1d5db;
+        }
+        .lesson-content li {
+            margin: 0.5rem 0;
+        }
+        .lesson-content a {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+        .lesson-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .lesson-content th,
+        .lesson-content td {
+            border: 1px solid #4b5563;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .lesson-content th {
+            background-color: #374151;
+            font-weight: 600;
+        }
+        .lesson-content blockquote {
+            border-left: 4px solid #60a5fa;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #9ca3af;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-blue-400">System Design Course</h1>
+                    <span class="text-sm text-gray-400">LMS</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="relative">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search lessons..."
+                            class="bg-gray-700 text-gray-100 px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                        />
+                        <svg class="absolute right-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Dark mode is default -->
+                    <div class="text-sm text-gray-400">
+                        <span id="currentTime"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-12 gap-6">
+
+            <!-- Left Sidebar - Navigation (3 columns) -->
+            <div class="col-span-12 lg:col-span-3">
+                <div class="bg-gray-800 rounded-lg p-4 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+
+                    <!-- Overall Progress Circle -->
+                    <div class="mb-6 text-center">
+                        <div class="relative inline-block">
+                            <canvas id="progressDonut" width="150" height="150"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-blue-400" id="progressPercentage">0%</div>
+                                    <div class="text-xs text-gray-400">Complete</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 gap-2 mb-6">
+                        <div class="bg-gray-700 rounded p-3 text-center">
+                            <div class="text-2xl font-bold text-green-400" id="completedCount">0</div>
+                            <div class="text-xs text-gray-400">Completed</div>
+                        </div>
+                        <div class="bg-gray-700 rounded p-3 text-center">
+                            <div class="text-2xl font-bold text-yellow-400" id="remainingCount">0</div>
+                            <div class="text-xs text-gray-400">Remaining</div>
+                        </div>
+                    </div>
+
+                    <!-- Streak -->
+                    <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg p-3 mb-6 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <div class="text-xl font-bold" id="streakDays">0</div>
+                                <div class="text-xs">Day Streak!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Continue Learning Button -->
+                    <button
+                        id="continueButton"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg mb-6 flex items-center justify-center space-x-2"
+                    >
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Continue Learning</span>
+                    </button>
+
+                    <!-- Filter Buttons -->
+                    <div class="flex space-x-2 mb-4">
+                        <button class="filter-btn flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded text-sm" data-filter="all">All</button>
+                        <button class="filter-btn flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded text-sm" data-filter="completed">✓ Done</button>
+                        <button class="filter-btn flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded text-sm" data-filter="incomplete">Todo</button>
+                    </div>
+
+                    <!-- Week Navigation -->
+                    <div id="weekNavigation" class="space-y-2">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area (6 columns) -->
+            <div class="col-span-12 lg:col-span-6">
+                <div class="bg-gray-800 rounded-lg p-6">
+
+                    <!-- Welcome Screen -->
+                    <div id="welcomeScreen" class="text-center py-12">
+                        <svg class="w-24 h-24 mx-auto mb-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        <h2 class="text-3xl font-bold mb-2">Welcome to System Design Course</h2>
+                        <p class="text-gray-400 mb-6">Select a lesson from the sidebar to begin your learning journey</p>
+                        <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="text-2xl font-bold text-blue-400" id="welcomeTotalLessons">0</div>
+                                <div class="text-sm text-gray-400">Total Lessons</div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="text-2xl font-bold text-green-400" id="welcomeTotalTime">0h</div>
+                                <div class="text-sm text-gray-400">Estimated Time</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lesson Content -->
+                    <div id="lessonContent" class="hidden">
+                        <!-- Lesson Header -->
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-gray-400" id="lessonBreadcrumb"></span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span id="lessonEstimatedTime">0 min</span>
+                                    </span>
+                                    <button id="bookmarkButton" class="text-gray-400 hover:text-yellow-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <h1 class="text-3xl font-bold mb-4" id="lessonTitle"></h1>
+
+                            <!-- Timer and Complete Button -->
+                            <div class="flex items-center justify-between bg-gray-700 rounded-lg p-4">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm text-gray-300">Time spent: <span id="lessonTimer" class="font-mono font-semibold">00:00</span></span>
+                                    </div>
+                                </div>
+                                <button id="completeButton" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg flex items-center space-x-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span>Mark Complete</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Video Embed (if available) -->
+                        <div id="videoContainer" class="hidden mb-6">
+                            <div class="aspect-w-16 aspect-h-9 bg-gray-900 rounded-lg overflow-hidden">
+                                <iframe id="videoIframe" class="w-full h-64" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                        <!-- Lesson Content -->
+                        <div class="lesson-content prose prose-invert max-w-none" id="lessonBody">
+                            <!-- Markdown content will be rendered here -->
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-700">
+                            <button id="prevButton" class="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Previous</span>
+                            </button>
+                            <button id="nextButton" class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span>Next</span>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Progress & Notes (3 columns) -->
+            <div class="col-span-12 lg:col-span-3">
+                <div class="space-y-6">
+
+                    <!-- Progress Stats -->
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                            </svg>
+                            Your Progress
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Time Invested</span>
+                                    <span class="font-semibold text-blue-400" id="timeSpent">0h 0m</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Est. Remaining</span>
+                                    <span class="font-semibold text-yellow-400" id="timeRemaining">0h</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Total Course</span>
+                                    <span class="font-semibold text-gray-300" id="totalTime">0h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week Progress -->
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-4">Week Progress</h3>
+                        <div id="weekProgressBars" class="space-y-3">
+                            <!-- Progress bars will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                            </svg>
+                            My Notes
+                        </h3>
+                        <textarea
+                            id="notesArea"
+                            class="w-full bg-gray-700 text-gray-100 rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[200px] resize-y"
+                            placeholder="Take notes while learning... (auto-saves)"
+                            disabled
+                        ></textarea>
+                        <div class="mt-2 text-xs text-gray-500 text-right" id="notesSaveStatus">Select a lesson to take notes</div>
+                    </div>
+
+                    <!-- Bookmarks -->
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                            </svg>
+                            Bookmarks
+                        </h3>
+                        <div id="bookmarksList" class="space-y-2">
+                            <p class="text-sm text-gray-400">No bookmarks yet</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/app.js"></script>
+
+</body>
+</html>

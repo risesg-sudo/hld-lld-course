@@ -1,0 +1,243 @@
+{
+  "LLD": {
+    "1": {
+      "topics": {
+        "Oop Fundamentals > Abstraction": [
+          {
+            "id": 1,
+            "title": "Abstraction",
+            "estimated_minutes": 81
+          }
+        ],
+        "Oop Fundamentals > Encapsulation": [
+          {
+            "id": 2,
+            "title": "Encapsulation",
+            "estimated_minutes": 63
+          }
+        ],
+        "Oop Fundamentals > Inheritance": [
+          {
+            "id": 3,
+            "title": "Inheritance",
+            "estimated_minutes": 69
+          }
+        ],
+        "Oop Fundamentals > Polymorphism": [
+          {
+            "id": 4,
+            "title": "Polymorphism",
+            "estimated_minutes": 66
+          }
+        ],
+        "Patterns > Abstract Factory": [
+          {
+            "id": 5,
+            "title": "Abstract Factory Pattern",
+            "estimated_minutes": 13
+          }
+        ],
+        "Patterns > Factory": [
+          {
+            "id": 6,
+            "title": "Factory Pattern",
+            "estimated_minutes": 15
+          }
+        ],
+        "Principles > Dry Principle": [
+          {
+            "id": 7,
+            "title": "DRY Principle: Don't Repeat Yourself",
+            "estimated_minutes": 17
+          }
+        ],
+        "Principles > Kiss Principle": [
+          {
+            "id": 8,
+            "title": "KISS Principle: Keep It Simple, Stupid",
+            "estimated_minutes": 13
+          }
+        ],
+        "Solid > Dependency Inversion": [
+          {
+            "id": 9,
+            "title": "Dependency Inversion Principle (DIP)",
+            "estimated_minutes": 13
+          }
+        ],
+        "Solid > Interface Segregation": [
+          {
+            "id": 10,
+            "title": "Interface Segregation Principle (ISP)",
+            "estimated_minutes": 13
+          }
+        ],
+        "Solid > Liskov Substitution": [
+          {
+            "id": 11,
+            "title": "Liskov Substitution Principle (LSP)",
+            "estimated_minutes": 13
+          }
+        ],
+        "Solid > Open Closed": [
+          {
+            "id": 12,
+            "title": "Open/Closed Principle (OCP)",
+            "estimated_minutes": 13
+          }
+        ],
+        "Solid > Single Responsibility": [
+          {
+            "id": 13,
+            "title": "Single Responsibility Principle (SRP)",
+            "estimated_minutes": 13
+          }
+        ]
+      }
+    },
+    "2": {
+      "topics": {
+        "Patterns > Builder": [
+          {
+            "id": 14,
+            "title": "Builder Pattern",
+            "estimated_minutes": 85
+          }
+        ],
+        "Patterns > Chain Of Responsibility": [
+          {
+            "id": 15,
+            "title": "Chain of Responsibility Pattern",
+            "estimated_minutes": 13
+          }
+        ],
+        "Patterns > Command": [
+          {
+            "id": 16,
+            "title": "Command Pattern",
+            "estimated_minutes": 13
+          }
+        ],
+        "Patterns > Iterator": [
+          {
+            "id": 17,
+            "title": "Iterator Pattern",
+            "estimated_minutes": 25
+          }
+        ],
+        "Patterns > Observer": [
+          {
+            "id": 18,
+            "title": "Observer Pattern",
+            "estimated_minutes": 17
+          }
+        ],
+        "Patterns > Prototype": [
+          {
+            "id": 19,
+            "title": "Prototype Pattern",
+            "estimated_minutes": 17
+          }
+        ],
+        "Patterns > Singleton": [
+          {
+            "id": 20,
+            "title": "Singleton Pattern",
+            "estimated_minutes": 71
+          }
+        ]
+      }
+    },
+    "3": {
+      "topics": {
+        "Patterns > Adapter": [
+          {
+            "id": 21,
+            "title": "Adapter Pattern",
+            "estimated_minutes": 64
+          }
+        ],
+        "Patterns > Bridge": [
+          {
+            "id": 22,
+            "title": "Bridge Pattern",
+            "estimated_minutes": 17
+          }
+        ],
+        "Patterns > Composite": [
+          {
+            "id": 23,
+            "title": "Composite Pattern",
+            "estimated_minutes": 14
+          }
+        ],
+        "Patterns > Decorator": [
+          {
+            "id": 24,
+            "title": "Decorator Pattern",
+            "estimated_minutes": 20
+          }
+        ],
+        "Patterns > Facade": [
+          {
+            "id": 25,
+            "title": "Facade Pattern",
+            "estimated_minutes": 12
+          }
+        ],
+        "Patterns > Proxy": [
+          {
+            "id": 26,
+            "title": "Proxy Pattern",
+            "estimated_minutes": 23
+          }
+        ],
+        "Patterns > Strategy": [
+          {
+            "id": 27,
+            "title": "Strategy Pattern",
+            "estimated_minutes": 72
+          }
+        ],
+        "Patterns > Template": [
+          {
+            "id": 28,
+            "title": "Template Method Pattern",
+            "estimated_minutes": 72
+          }
+        ]
+      }
+    }
+  },
+  "HLD": {
+    "1": {
+      "topics": {
+        "Client Server": [
+          {
+            "id": 29,
+            "title": "Client-Server Architecture",
+            "estimated_minutes": 64
+          }
+        ]
+      }
+    },
+    "3": {
+      "topics": {
+        "Database Types > Nosql": [
+          {
+            "id": 30,
+            "title": "NoSQL Databases - Core Concepts",
+            "estimated_minutes": 41
+          }
+        ],
+        "Database Types > Sql": [
+          {
+            "id": 31,
+            "title": "SQL Databases - Core Concepts",
+            "estimated_minutes": 26
+          }
+        ]
+      }
+    }
+  }
+}

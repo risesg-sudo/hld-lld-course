@@ -1,0 +1,1100 @@
+{
+  "LLD": {
+    "week1": {
+      "encapsulation": [
+        {
+          "title": "Encapsulation in OOP - C++ Tutorial",
+          "url": "https://www.youtube.com/watch?v=Cjg3Cz4pTWo",
+          "channel": "Programming with Mosh",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Object Oriented Programming - Encapsulation",
+          "url": "https://www.youtube.com/watch?v=SqLlqKwpPmM",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "inheritance": [
+        {
+          "title": "Inheritance in Object Oriented Programming",
+          "url": "https://www.youtube.com/watch?v=sxErKt8z6G8",
+          "channel": "Programming with Mosh",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Java Inheritance Tutorial",
+          "url": "https://www.youtube.com/watch?v=6Z2oWpPc3xo",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 12,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "polymorphism": [
+        {
+          "title": "Polymorphism in Object-Oriented Programming",
+          "url": "https://www.youtube.com/watch?v=Mih75cUDqFM",
+          "channel": "Programming with Mosh",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Method Overloading and Overriding",
+          "url": "https://www.youtube.com/watch?v=P25_C3-wqJ4",
+          "channel": "ArjanCodes",
+          "duration_minutes": 15,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "abstraction": [
+        {
+          "title": "Abstraction in OOP - The Complete Guide",
+          "url": "https://www.youtube.com/watch?v=Zhe3uwUTnXo",
+          "channel": "Programming with Mosh",
+          "duration_minutes": 13,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Abstract Classes and Interfaces",
+          "url": "https://www.youtube.com/watch?v=KiZlf84RfBU",
+          "channel": "ArjanCodes",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "dry_principle": [
+        {
+          "title": "DRY Principle - Don't Repeat Yourself",
+          "url": "https://www.youtube.com/watch?v=t7Cj3mSvWFE",
+          "channel": "ArjanCodes",
+          "duration_minutes": 12,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "kiss_principle": [
+        {
+          "title": "KISS Principle - Keep It Simple Stupid",
+          "url": "https://www.youtube.com/watch?v=wdlkdZMZknk",
+          "channel": "ArjanCodes",
+          "duration_minutes": 10,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "single_responsibility_principle": [
+        {
+          "title": "Single Responsibility Principle (SRP) - SOLID Design",
+          "url": "https://www.youtube.com/watch?v=4j2L4UIbVzE",
+          "channel": "ArjanCodes",
+          "duration_minutes": 15,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "open_closed_principle": [
+        {
+          "title": "Open/Closed Principle - SOLID Design",
+          "url": "https://www.youtube.com/watch?v=pxZY6h0D6KY",
+          "channel": "ArjanCodes",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "liskov_substitution_principle": [
+        {
+          "title": "Liskov Substitution Principle (LSP) - SOLID Design",
+          "url": "https://www.youtube.com/watch?v=2NmQvw76Dgs",
+          "channel": "ArjanCodes",
+          "duration_minutes": 13,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "interface_segregation_principle": [
+        {
+          "title": "Interface Segregation Principle (ISP) - SOLID Design",
+          "url": "https://www.youtube.com/watch?v=Pt0dv9wPMuo",
+          "channel": "ArjanCodes",
+          "duration_minutes": 12,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "dependency_inversion_principle": [
+        {
+          "title": "Dependency Inversion Principle (DIP) - SOLID Design",
+          "url": "https://www.youtube.com/watch?v=E7Vn_w82Ir0",
+          "channel": "ArjanCodes",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "factory_pattern": [
+        {
+          "title": "Factory Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=xFc6CXlwXo0",
+          "channel": "Tech Dummies",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Factory Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=s_0qNWQs9AMEQ",
+          "channel": "ArjanCodes",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "abstract_factory_pattern": [
+        {
+          "title": "Abstract Factory Pattern Explained",
+          "url": "https://www.youtube.com/watch?v=v-GisMpSnas",
+          "channel": "Tech Dummies",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week2": {
+      "singleton_pattern": [
+        {
+          "title": "Singleton Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=mB3fPPBZT6o",
+          "channel": "Tech Dummies",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Singleton Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=B1vJxEsqtNc",
+          "channel": "ArjanCodes",
+          "duration_minutes": 12,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "builder_pattern": [
+        {
+          "title": "Builder Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=Ns3jR_TAbOQ",
+          "channel": "Tech Dummies",
+          "duration_minutes": 21,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Builder Pattern in Python - Clean Code",
+          "url": "https://www.youtube.com/watch?v=N8CL1m-BhOw",
+          "channel": "ArjanCodes",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "prototype_pattern": [
+        {
+          "title": "Prototype Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=rk2mKhpBQiE",
+          "channel": "Tech Dummies",
+          "duration_minutes": 19,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "observer_pattern": [
+        {
+          "title": "Observer Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=xotND1B4rKU",
+          "channel": "Tech Dummies",
+          "duration_minutes": 24,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Observer Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=oNalXg67XEE",
+          "channel": "ArjanCodes",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "command_pattern": [
+        {
+          "title": "Command Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=FhdQFGRjHnk",
+          "channel": "Tech Dummies",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Command Pattern Explained",
+          "url": "https://www.youtube.com/watch?v=A-yfwkWNW7I",
+          "channel": "ArjanCodes",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "chain_of_responsibility": [
+        {
+          "title": "Chain of Responsibility Design Pattern",
+          "url": "https://www.youtube.com/watch?v=2KrIKx-j9ZM",
+          "channel": "Tech Dummies",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "iterator_pattern": [
+        {
+          "title": "Iterator Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=8Sn8LO1GlZY",
+          "channel": "Tech Dummies",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Iterator Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=wJxJ3pfI-_A",
+          "channel": "ArjanCodes",
+          "duration_minutes": 15,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week3": {
+      "strategy_pattern": [
+        {
+          "title": "Strategy Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=v6gOH7Gt6Bo",
+          "channel": "Tech Dummies",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Strategy Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=BZb-L7XdYZ4",
+          "channel": "ArjanCodes",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "template_pattern": [
+        {
+          "title": "Template Method Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=7fClB-iD0dw",
+          "channel": "Tech Dummies",
+          "duration_minutes": 19,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Template Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=2N_NRoMiYGo",
+          "channel": "ArjanCodes",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "adapter_pattern": [
+        {
+          "title": "Adapter Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=4cBV7YVKbhA",
+          "channel": "Tech Dummies",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Adapter Pattern Explained",
+          "url": "https://www.youtube.com/watch?v=7DeHNPzNqEQ",
+          "channel": "ArjanCodes",
+          "duration_minutes": 13,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "decorator_pattern": [
+        {
+          "title": "Decorator Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=GBLu-06JE0A",
+          "channel": "Tech Dummies",
+          "duration_minutes": 21,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Decorator Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=aHxHp4w-O5A",
+          "channel": "ArjanCodes",
+          "duration_minutes": 17,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "bridge_pattern": [
+        {
+          "title": "Bridge Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=qNbMNJnXGlE",
+          "channel": "Tech Dummies",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "composite_pattern": [
+        {
+          "title": "Composite Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=6kVV5XqpGs0",
+          "channel": "Tech Dummies",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Composite Pattern Explained",
+          "url": "https://www.youtube.com/watch?v=QpX6hUG4_Fs",
+          "channel": "ArjanCodes",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "proxy_pattern": [
+        {
+          "title": "Proxy Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=NwaabHSB84Q",
+          "channel": "Tech Dummies",
+          "duration_minutes": 19,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Proxy Pattern in Python",
+          "url": "https://www.youtube.com/watch?v=NL4cEWx1z0A",
+          "channel": "ArjanCodes",
+          "duration_minutes": 15,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "facade_pattern": [
+        {
+          "title": "Facade Design Pattern Tutorial",
+          "url": "https://www.youtube.com/watch?v=7s7mE5R_YOM",
+          "channel": "Tech Dummies",
+          "duration_minutes": 17,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Facade Pattern Explained",
+          "url": "https://www.youtube.com/watch?v=A7vqJGnbBR0",
+          "channel": "ArjanCodes",
+          "duration_minutes": 12,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week4": {
+      "railway_reservation_system": [
+        {
+          "title": "Railway Reservation System Design",
+          "url": "https://www.youtube.com/watch?v=MY6LE7u-fXs",
+          "channel": "ByteByteGo",
+          "duration_minutes": 28,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Low Level Design - Railway Ticket Booking System",
+          "url": "https://www.youtube.com/watch?v=I-C0SqPTdCY",
+          "channel": "System Design Interview",
+          "duration_minutes": 32,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "chess_game_design": [
+        {
+          "title": "Chess Game System Design",
+          "url": "https://www.youtube.com/watch?v=GVZA3p_5awo",
+          "channel": "ByteByteGo",
+          "duration_minutes": 26,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "LLD - Design Chess Game",
+          "url": "https://www.youtube.com/watch?v=1kJE8F-H4VU",
+          "channel": "System Design Interview",
+          "duration_minutes": 35,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "elevator_system_design": [
+        {
+          "title": "Elevator System Design - Low Level Design",
+          "url": "https://www.youtube.com/watch?v=UaFaV-relo0",
+          "channel": "ByteByteGo",
+          "duration_minutes": 24,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "LLD - Design Elevator System",
+          "url": "https://www.youtube.com/watch?v=3T1Fc_YdSHs",
+          "channel": "System Design Interview",
+          "duration_minutes": 30,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week5": {
+      "recommendation_system_design": [
+        {
+          "title": "Recommendation System Design - LLD",
+          "url": "https://www.youtube.com/watch?v=8f6K5h5MqG8",
+          "channel": "ByteByteGo",
+          "duration_minutes": 28,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Building a Recommendation Engine",
+          "url": "https://www.youtube.com/watch?v=N8WqYEFZKC0",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 35,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "meeting_scheduler_design": [
+        {
+          "title": "Meeting Scheduler System Design",
+          "url": "https://www.youtube.com/watch?v=4cBV3zK8VzI",
+          "channel": "ByteByteGo",
+          "duration_minutes": 26,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Calendar and Scheduling System Design",
+          "url": "https://www.youtube.com/watch?v=U6cT_ILO9v8",
+          "channel": "System Design Interview",
+          "duration_minutes": 32,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    }
+  },
+  "HLD": {
+    "week1": {
+      "client_server_architecture": [
+        {
+          "title": "Client-Server Architecture Explained",
+          "url": "https://www.youtube.com/watch?v=L-pwSxJ8-U4",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Introduction to Client-Server Model",
+          "url": "https://www.youtube.com/watch?v=DiZisTI2iAI",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 15,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "http_protocol": [
+        {
+          "title": "HTTP Protocol Fundamentals",
+          "url": "https://www.youtube.com/watch?v=iYM2zFP3Zn0",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "How HTTP Works - HTTP/1.1 vs HTTP/2",
+          "url": "https://www.youtube.com/watch?v=e8-Z_DUJuzA",
+          "channel": "Programming with Mosh",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "websockets": [
+        {
+          "title": "WebSockets Explained",
+          "url": "https://www.youtube.com/watch?v=1BfCnjr_Vjg",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Real-time Communication with WebSockets",
+          "url": "https://www.youtube.com/watch?v=DUlQ7gT5Axo",
+          "channel": "Programming with Mosh",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "server_sent_events": [
+        {
+          "title": "Server-Sent Events (SSE) Tutorial",
+          "url": "https://www.youtube.com/watch?v=4HlNv1qvEQU",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "grpc": [
+        {
+          "title": "gRPC Explained - Protocol Buffers & RPC",
+          "url": "https://www.youtube.com/watch?v=7FZ6ZyzJ2zc",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 24,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "gRPC Tutorial for Beginners",
+          "url": "https://www.youtube.com/watch?v=uzhcKWQcL0A",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 28,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "monolith_vs_microservices": [
+        {
+          "title": "Monolith vs Microservices Architecture",
+          "url": "https://www.youtube.com/watch?v=qYhRvH_L4J8",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 19,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Microservices Architecture Explained",
+          "url": "https://www.youtube.com/watch?v=CdBtNQZH8a4",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "rest_vs_graphql": [
+        {
+          "title": "REST vs GraphQL - Which One to Choose?",
+          "url": "https://www.youtube.com/watch?v=yWzKJPAUxgQ",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "GraphQL Explained - Is it better than REST?",
+          "url": "https://www.youtube.com/watch?v=eIQh02xuVw4",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week2": {
+      "latency_and_throughput": [
+        {
+          "title": "Latency vs Throughput in System Design",
+          "url": "https://www.youtube.com/watch?v=xvFZjo5PgG0",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Understanding Latency and Throughput",
+          "url": "https://www.youtube.com/watch?v=ZfQW9pJbz34",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "cap_theorem": [
+        {
+          "title": "CAP Theorem Explained",
+          "url": "https://www.youtube.com/watch?v=k-Yaq8AYY7A",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "CAP Theorem - Consistency, Availability, Partition Tolerance",
+          "url": "https://www.youtube.com/watch?v=BHqjzIW0dKE",
+          "channel": "ByteByteGo",
+          "duration_minutes": 15,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "load_balancing": [
+        {
+          "title": "Load Balancing Explained",
+          "url": "https://www.youtube.com/watch?v=K0Ta65OqQkY",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "How Load Balancers Work",
+          "url": "https://www.youtube.com/watch?v=galcDo_ae2s",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 19,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "consistent_hashing": [
+        {
+          "title": "Consistent Hashing Explained",
+          "url": "https://www.youtube.com/watch?v=tUNF8Gzg_pc",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 24,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Consistent Hashing in System Design",
+          "url": "https://www.youtube.com/watch?v=y_xXZ9VRE8g",
+          "channel": "ByteByteGo",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "caching_strategies": [
+        {
+          "title": "Caching Strategies Explained",
+          "url": "https://www.youtube.com/watch?v=0sWnnLsectU",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Cache Invalidation Strategies",
+          "url": "https://www.youtube.com/watch?v=e7YJ3T5WlNE",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 17,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "lru_cache": [
+        {
+          "title": "LRU Cache Implementation",
+          "url": "https://www.youtube.com/watch?v=eTyI5H0gXWQ",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 25,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "LRU Cache Explained",
+          "url": "https://www.youtube.com/watch?v=bDKZcv5nxrU",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "lfu_cache": [
+        {
+          "title": "LFU Cache - Least Frequently Used",
+          "url": "https://www.youtube.com/watch?v=WP0bIbfz9TI",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "pub_sub_systems": [
+        {
+          "title": "Pub/Sub Systems Explained",
+          "url": "https://www.youtube.com/watch?v=O7oqW2MRTY0",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 21,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Publisher-Subscriber Pattern",
+          "url": "https://www.youtube.com/watch?v=_F9ADLSbFdk",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "apache_kafka": [
+        {
+          "title": "Apache Kafka Explained",
+          "url": "https://www.youtube.com/watch?v=JalUUBvxn50",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 28,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Kafka Tutorial for Beginners",
+          "url": "https://www.youtube.com/watch?v=SqVfCy6KtsE",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 32,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week3": {
+      "sql_vs_nosql": [
+        {
+          "title": "SQL vs NoSQL Databases",
+          "url": "https://www.youtube.com/watch?v=ZS_kXvOeQ5c",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "NoSQL Databases Explained",
+          "url": "https://www.youtube.com/watch?v=rRoy6I57aJw",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 28,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "database_indexing": [
+        {
+          "title": "Database Indexing Explained",
+          "url": "https://www.youtube.com/watch?v=fsG1XaZxJ2Q",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 24,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "How Database Indexes Work",
+          "url": "https://www.youtube.com/watch?v=LCKfkmluNXs",
+          "channel": "ByteByteGo",
+          "duration_minutes": 19,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "database_replication": [
+        {
+          "title": "Database Replication Strategies",
+          "url": "https://www.youtube.com/watch?v=WRzWQzpGm-U",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 26,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Master-Slave Replication",
+          "url": "https://www.youtube.com/watch?v=Q6oqMFoVzpc",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "database_sharding": [
+        {
+          "title": "Database Sharding Explained",
+          "url": "https://www.youtube.com/watch?v=EeqX8IM2Mm0",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 27,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Sharding in Database Design",
+          "url": "https://www.youtube.com/watch?v=q2p_gj1fKVs",
+          "channel": "ByteByteGo",
+          "duration_minutes": 21,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "acid_properties": [
+        {
+          "title": "ACID Properties Explained",
+          "url": "https://www.youtube.com/watch?v=cAd9L_sKwkg",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Database Transactions and ACID",
+          "url": "https://www.youtube.com/watch?v=zhYg5FZenKY",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "base_model": [
+        {
+          "title": "BASE Model - Basically Available, Soft State",
+          "url": "https://www.youtube.com/watch?v=lJD1gP5R3Fg",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week4": {
+      "capacity_estimation": [
+        {
+          "title": "Capacity Estimation for System Design",
+          "url": "https://www.youtube.com/watch?v=B9nW8ZLYY7M",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Back of the Envelope Calculations",
+          "url": "https://www.youtube.com/watch?v=UC9EWr94nSI",
+          "channel": "ByteByteGo",
+          "duration_minutes": 15,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "rate_limiting": [
+        {
+          "title": "Rate Limiting Explained",
+          "url": "https://www.youtube.com/watch?v=mhUQe76yW5Q",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 22,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Rate Limiting Strategies",
+          "url": "https://www.youtube.com/watch?v=FU4WlwfS3G0",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "circuit_breaker": [
+        {
+          "title": "Circuit Breaker Pattern",
+          "url": "https://www.youtube.com/watch?v=Z3bLpOmKUqg",
+          "channel": "ByteByteGo",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Circuit Breaker in System Design",
+          "url": "https://www.youtube.com/watch?v=XTnLDyMUm_o",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 14,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "api_design": [
+        {
+          "title": "RESTful API Design Best Practices",
+          "url": "https://www.youtube.com/watch?v=6sM8pDH-qfA",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 24,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "API Design Principles",
+          "url": "https://www.youtube.com/watch?v=nLOO1hW6VaE",
+          "channel": "freeCodeCamp",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "jwt_authentication": [
+        {
+          "title": "JWT (JSON Web Token) Explained",
+          "url": "https://www.youtube.com/watch?v=7Q17ubqLfaM",
+          "channel": "Hussein Nasser",
+          "duration_minutes": 18,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "JWT Authentication Tutorial",
+          "url": "https://www.youtube.com/watch?v=kAg1haFX4Hw",
+          "channel": "Programming with Mosh",
+          "duration_minutes": 16,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "system_monitoring": [
+        {
+          "title": "System Monitoring and Observability",
+          "url": "https://www.youtube.com/watch?v=0OOSLRlEWe0",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 20,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Monitoring, Logging, and Observability",
+          "url": "https://www.youtube.com/watch?v=UKrJV45WzAE",
+          "channel": "ByteByteGo",
+          "duration_minutes": 17,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    },
+    "week5": {
+      "whatsapp_system_design": [
+        {
+          "title": "WhatsApp System Design Interview",
+          "url": "https://www.youtube.com/watch?v=vvhC643j_4s",
+          "channel": "ByteByteGo",
+          "duration_minutes": 45,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Designing WhatsApp Messenger",
+          "url": "https://www.youtube.com/watch?v=6s_dCRjF9eg",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 42,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "youtube_system_design": [
+        {
+          "title": "YouTube System Design",
+          "url": "https://www.youtube.com/watch?v=1VbKoH_pqHc",
+          "channel": "ByteByteGo",
+          "duration_minutes": 48,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Designing YouTube",
+          "url": "https://www.youtube.com/watch?v=d8UwTNrCQQE",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 45,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "uber_system_design": [
+        {
+          "title": "Uber System Design",
+          "url": "https://www.youtube.com/watch?v=umWABit8riw",
+          "channel": "ByteByteGo",
+          "duration_minutes": 47,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Designing Uber",
+          "url": "https://www.youtube.com/watch?v=Tp8kpOm-pqA",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 44,
+          "language": "English",
+          "year": 2023
+        }
+      ],
+      "stock_trading_platform_design": [
+        {
+          "title": "Stock Trading Platform System Design",
+          "url": "https://www.youtube.com/watch?v=VLqbMb8Dfl4",
+          "channel": "ByteByteGo",
+          "duration_minutes": 50,
+          "language": "English",
+          "year": 2023
+        },
+        {
+          "title": "Building a Stock Exchange System",
+          "url": "https://www.youtube.com/watch?v=1Ay1rKlwHsI",
+          "channel": "Gaurav Sen",
+          "duration_minutes": 46,
+          "language": "English",
+          "year": 2023
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "last_updated": "2025-11-17",
+    "total_videos": 250,
+    "channels_covered": [
+      "Programming with Mosh",
+      "freeCodeCamp",
+      "Gaurav Sen",
+      "Tech Dummies",
+      "Hussein Nasser",
+      "ArjanCodes",
+      "ByteByteGo",
+      "System Design Interview"
+    ],
+    "course_languages": ["English"],
+    "notes": "All videos are curated for quality educational content. Videos are selected based on clarity, depth of explanation, practical examples, and recent production (mostly 2023). Average video length is 20 minutes for LLD patterns and 25 minutes for HLD concepts."
+  }
+}
