@@ -4,6 +4,8 @@
 
 You need to create different types of database connections based on configuration. Without a factory:
 
+:::multilang:::
+
 ```python
 if db_type == "mysql":
     db = MySQLDatabase(config)
@@ -13,6 +15,30 @@ elif db_type == "mongo":
     db = MongoDatabase(config)
 # Repeated everywhere you create databases!
 ```
+
+```cpp
+if (dbType == "mysql") {
+    db = std::make_unique<MySQLDatabase>(config);
+} else if (dbType == "postgres") {
+    db = std::make_unique<PostgreSQLDatabase>(config);
+} else if (dbType == "mongo") {
+    db = std::make_unique<MongoDatabase>(config);
+}
+// Repeated everywhere you create databases!
+```
+
+```java
+if (dbType.equals("mysql")) {
+    db = new MySQLDatabase(config);
+} else if (dbType.equals("postgres")) {
+    db = new PostgreSQLDatabase(config);
+} else if (dbType.equals("mongo")) {
+    db = new MongoDatabase(config);
+}
+// Repeated everywhere you create databases!
+```
+
+:::
 
 Factory pattern centralizes this logic.
 
@@ -28,6 +54,8 @@ Object creation logic scattered across codebase:
 
 Factory Pattern provides an interface for creating objects without specifying their exact classes.
 
+:::multilang:::
+
 ```python
 class DatabaseFactory:
     @staticmethod
@@ -40,10 +68,56 @@ class DatabaseFactory:
             return MongoDatabase(config)
 ```
 
+```cpp
+class DatabaseFactory {
+public:
+    static std::unique_ptr<Database> create(const std::string& dbType, const Config& config) {
+        if (dbType == "mysql") {
+            return std::make_unique<MySQLDatabase>(config);
+        } else if (dbType == "postgres") {
+            return std::make_unique<PostgreSQLDatabase>(config);
+        } else if (dbType == "mongo") {
+            return std::make_unique<MongoDatabase>(config);
+        }
+        return nullptr;
+    }
+};
+```
+
+```java
+class DatabaseFactory {
+    public static Database create(String dbType, Config config) {
+        if (dbType.equals("mysql")) {
+            return new MySQLDatabase(config);
+        } else if (dbType.equals("postgres")) {
+            return new PostgreSQLDatabase(config);
+        } else if (dbType.equals("mongo")) {
+            return new MongoDatabase(config);
+        }
+        return null;
+    }
+}
+```
+
+:::
+
 Now create databases with:
+
+:::multilang:::
+
 ```python
 db = DatabaseFactory.create(db_type, config)
 ```
+
+```cpp
+auto db = DatabaseFactory::create(dbType, config);
+```
+
+```java
+Database db = DatabaseFactory.create(dbType, config);
+```
+
+:::
 
 ## Benefits
 

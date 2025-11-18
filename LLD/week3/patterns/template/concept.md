@@ -30,6 +30,8 @@ Template Method pattern uses inheritance to separate the algorithm skeleton from
 
 **Define Algorithm in Base Class**: The base class contains a template method that defines the algorithm structure. This method calls other methods—some abstract, some concrete, some hooks.
 
+:::multilang:::
+
 ```python
 class DataMiner(ABC):
     def mine(self, path: str) -> None:
@@ -51,7 +53,62 @@ class DataMiner(ABC):
         return f"Report: {analysis}"
 ```
 
+```cpp
+class DataMiner {
+public:
+    // Template method - defines algorithm skeleton
+    void mine(const std::string& path) {
+        auto rawData = openFile(path);
+        auto data = extractData(rawData);
+        auto parsed = parseData(data);
+        auto analysis = analyzeData(parsed);
+        auto report = generateReport(analysis);
+        saveReport(report);
+    }
+
+    // Subclasses must implement
+    virtual std::vector<std::map<std::string, std::string>>
+    parseData(const std::vector<std::string>& data) = 0;
+
+    // Hook - subclasses can override
+    virtual std::string generateReport(
+        const std::map<std::string, int>& analysis
+    ) {
+        return "Report: " + /* format analysis */;
+    }
+
+    virtual ~DataMiner() = default;
+};
+```
+
+```java
+abstract class DataMiner {
+    // Template method - defines algorithm skeleton
+    public final void mine(String path) {
+        List<String> rawData = openFile(path);
+        List<String> data = extractData(rawData);
+        List<Map<String, String>> parsed = parseData(data);
+        Map<String, Integer> analysis = analyzeData(parsed);
+        String report = generateReport(analysis);
+        saveReport(report);
+    }
+
+    // Subclasses must implement
+    protected abstract List<Map<String, String>>
+        parseData(List<String> data);
+
+    // Hook - subclasses can override
+    protected String generateReport(Map<String, Integer> analysis) {
+        return "Report: " + analysis.toString();
+    }
+}
+```
+
+:::
+
 **Subclasses Implement Steps**: Subclasses implement abstract methods (required customization) and optionally override hook methods (optional customization).
+
+:::multilang:::
 
 ```python
 class CSVDataMiner(DataMiner):
@@ -65,6 +122,54 @@ class JSONDataMiner(DataMiner):
         return json.loads(data[0])
 ```
 
+```cpp
+class CSVDataMiner : public DataMiner {
+public:
+    std::vector<std::map<std::string, std::string>>
+    parseData(const std::vector<std::string>& data) override {
+        // CSV-specific parsing
+        std::vector<std::map<std::string, std::string>> result;
+        for (const auto& line : data) {
+            // Parse CSV line
+        }
+        return result;
+    }
+};
+
+class JSONDataMiner : public DataMiner {
+public:
+    std::vector<std::map<std::string, std::string>>
+    parseData(const std::vector<std::string>& data) override {
+        // JSON-specific parsing
+        return parseJSON(data[0]);
+    }
+};
+```
+
+```java
+class CSVDataMiner extends DataMiner {
+    @Override
+    protected List<Map<String, String>> parseData(List<String> data) {
+        // CSV-specific parsing
+        List<Map<String, String>> result = new ArrayList<>();
+        for (String line : data) {
+            // Parse CSV line
+        }
+        return result;
+    }
+}
+
+class JSONDataMiner extends DataMiner {
+    @Override
+    protected List<Map<String, String>> parseData(List<String> data) {
+        // JSON-specific parsing
+        return parseJSON(data.get(0));
+    }
+}
+```
+
+:::
+
 **Three Types of Methods**:
 
 1. **Template Method** (final, not overridden): Defines the algorithm structure. Calls other methods in a specific order.
@@ -76,6 +181,8 @@ class JSONDataMiner(DataMiner):
 **How It Works**:
 
 Client code calls the template method. The template method executes the algorithm, calling abstract and hook methods at the right points. Subclasses can't change the algorithm structure—that's fixed in the base class. They can only customize specific steps.
+
+:::multilang:::
 
 ```python
 # Client code
@@ -90,6 +197,36 @@ miner.mine("data.csv")  # Calls template method
 # 5. mine() calls generate_report() - base class or override
 # 6. mine() calls save_report() - base class or override
 ```
+
+```cpp
+// Client code
+auto miner = std::make_unique<CSVDataMiner>();
+miner->mine("data.csv");  // Calls template method
+
+// Execution flow:
+// 1. mine() calls openFile() - base class implementation
+// 2. mine() calls extractData() - base class implementation
+// 3. mine() calls parseData() - CSVDataMiner implementation (virtual)
+// 4. mine() calls analyzeData() - base class implementation
+// 5. mine() calls generateReport() - base class or override (virtual)
+// 6. mine() calls saveReport() - base class or override
+```
+
+```java
+// Client code
+DataMiner miner = new CSVDataMiner();
+miner.mine("data.csv");  // Calls template method
+
+// Execution flow:
+// 1. mine() calls openFile() - base class implementation
+// 2. mine() calls extractData() - base class implementation
+// 3. mine() calls parseData() - CSVDataMiner implementation (abstract)
+// 4. mine() calls analyzeData() - base class implementation
+// 5. mine() calls generateReport() - base class or override
+// 6. mine() calls saveReport() - base class or override
+```
+
+:::
 
 **The "Hollywood Principle"**: "Don't call us, we'll call you." The base class (framework) calls subclass methods, not vice versa. This inverts control compared to normal composition.
 

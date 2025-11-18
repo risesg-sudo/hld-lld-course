@@ -4,6 +4,8 @@
 
 Have you ever written code that looks like this?
 
+:::multilang:::
+
 ```python
 if payment_method == "credit_card":
     # 50 lines of credit card logic
@@ -14,6 +16,32 @@ elif payment_method == "crypto":
 elif payment_method == "apple_pay":
     # 50 lines of Apple Pay logic
 ```
+
+```cpp
+if (paymentMethod == "credit_card") {
+    // 50 lines of credit card logic
+} else if (paymentMethod == "paypal") {
+    // 50 lines of PayPal logic
+} else if (paymentMethod == "crypto") {
+    // 50 lines of crypto logic
+} else if (paymentMethod == "apple_pay") {
+    // 50 lines of Apple Pay logic
+}
+```
+
+```java
+if (paymentMethod.equals("credit_card")) {
+    // 50 lines of credit card logic
+} else if (paymentMethod.equals("paypal")) {
+    // 50 lines of PayPal logic
+} else if (paymentMethod.equals("crypto")) {
+    // 50 lines of crypto logic
+} else if (paymentMethod.equals("apple_pay")) {
+    // 50 lines of Apple Pay logic
+}
+```
+
+:::
 
 What happens when you need to add a new payment method? You modify this function. What happens when credit card processing rules change? You modify this function. What happens when you want to test PayPal logic in isolation? You can't easily.
 
@@ -47,6 +75,8 @@ Strategy pattern separates these concerns through composition.
 
 Here's how it transforms the code:
 
+:::multilang:::
+
 ```python
 # Before: Conditional mess
 def process_payment(amount, method, **details):
@@ -77,7 +107,98 @@ class PaymentProcessor:
         return self._strategy.pay(amount)
 ```
 
+```cpp
+// Before: Conditional mess
+bool processPayment(double amount, const std::string& method, /* details */) {
+    if (method == "credit_card") {
+        // implementation
+    } else if (method == "paypal") {
+        // implementation
+    }
+    // ... more branches
+}
+
+// After: Strategy pattern
+class PaymentStrategy {
+public:
+    virtual ~PaymentStrategy() = default;
+    virtual bool pay(double amount) = 0;
+};
+
+class CreditCardPayment : public PaymentStrategy {
+public:
+    bool pay(double amount) override {
+        // credit card implementation
+    }
+};
+
+class PayPalPayment : public PaymentStrategy {
+public:
+    bool pay(double amount) override {
+        // PayPal implementation
+    }
+};
+
+class PaymentProcessor {
+private:
+    std::unique_ptr<PaymentStrategy> strategy;
+
+public:
+    PaymentProcessor(std::unique_ptr<PaymentStrategy> strat)
+        : strategy(std::move(strat)) {}
+
+    bool processPayment(double amount) {
+        return strategy->pay(amount);
+    }
+};
+```
+
+```java
+// Before: Conditional mess
+boolean processPayment(double amount, String method, /* details */) {
+    if (method.equals("credit_card")) {
+        // implementation
+    } else if (method.equals("paypal")) {
+        // implementation
+    }
+    // ... more branches
+}
+
+// After: Strategy pattern
+interface PaymentStrategy {
+    boolean pay(double amount);
+}
+
+class CreditCardPayment implements PaymentStrategy {
+    public boolean pay(double amount) {
+        // credit card implementation
+    }
+}
+
+class PayPalPayment implements PaymentStrategy {
+    public boolean pay(double amount) {
+        // PayPal implementation
+    }
+}
+
+class PaymentProcessor {
+    private PaymentStrategy strategy;
+
+    public PaymentProcessor(PaymentStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean processPayment(double amount) {
+        return strategy.pay(amount);
+    }
+}
+```
+
+:::
+
 The client code becomes:
+
+:::multilang:::
 
 ```python
 # Select strategy
@@ -90,6 +211,38 @@ processor.process_payment(100.00)
 processor.set_strategy(PayPalPayment("user@email.com"))
 processor.process_payment(50.00)
 ```
+
+```cpp
+// Select strategy
+auto processor = PaymentProcessor(
+    std::make_unique<CreditCardPayment>("1234-5678")
+);
+
+// Use strategy
+processor.processPayment(100.00);
+
+// Change strategy at runtime
+processor.setStrategy(
+    std::make_unique<PayPalPayment>("user@email.com")
+);
+processor.processPayment(50.00);
+```
+
+```java
+// Select strategy
+PaymentProcessor processor = new PaymentProcessor(
+    new CreditCardPayment("1234-5678")
+);
+
+// Use strategy
+processor.processPayment(100.00);
+
+// Change strategy at runtime
+processor.setStrategy(new PayPalPayment("user@email.com"));
+processor.processPayment(50.00);
+```
+
+:::
 
 **How It Works**:
 

@@ -4,9 +4,22 @@
 
 Have you ever seen code like this?
 
+:::multilang:::
+
 ```python
 pizza = Pizza("large", "thin", "tomato", ["pepperoni", "mushroom"], "mozzarella", True, False)
 ```
+
+```cpp
+Pizza pizza("large", "thin", "tomato", {"pepperoni", "mushroom"}, "mozzarella", true, false);
+```
+
+```java
+Pizza pizza = new Pizza("large", "thin", "tomato",
+                       Arrays.asList("pepperoni", "mushroom"), "mozzarella", true, false);
+```
+
+:::
 
 What does `True` mean? What about `False`? Which parameter is the crust type, and which is the sauce? Now imagine this constructor has 10 parameters, half of them optional. How do you create a pizza with just size and toppings, using default values for everything else?
 
@@ -23,6 +36,9 @@ Complex objects often have:
 **Traditional Approaches Fall Short:**
 
 **1. Telescoping Constructors:**
+
+:::multilang:::
+
 ```python
 Pizza(size)
 Pizza(size, crust)
@@ -30,9 +46,31 @@ Pizza(size, crust, sauce)
 Pizza(size, crust, sauce, toppings)
 # ... dozens of combinations
 ```
+
+```cpp
+Pizza(size)
+Pizza(size, crust)
+Pizza(size, crust, sauce)
+Pizza(size, crust, sauce, toppings)
+// ... dozens of combinations
+```
+
+```java
+Pizza(size)
+Pizza(size, crust)
+Pizza(size, crust, sauce)
+Pizza(size, crust, sauce, toppings)
+// ... dozens of combinations
+```
+
+:::
+
 Results in: Constructor explosion, confusing parameter order, difficult maintenance.
 
 **2. Setters After Construction:**
+
+:::multilang:::
+
 ```python
 pizza = Pizza()
 pizza.set_size("large")
@@ -40,12 +78,45 @@ pizza.set_crust("thin")
 pizza.set_sauce("tomato")
 # ... many setter calls
 ```
+
+```cpp
+Pizza pizza;
+pizza.setSize("large");
+pizza.setCrust("thin");
+pizza.setSauce("tomato");
+// ... many setter calls
+```
+
+```java
+Pizza pizza = new Pizza();
+pizza.setSize("large");
+pizza.setCrust("thin");
+pizza.setSauce("tomato");
+// ... many setter calls
+```
+
+:::
+
 Problems: Object partially constructed between calls, not thread-safe, can't create immutable objects.
 
 **3. Parameter Objects:**
+
+:::multilang:::
+
 ```python
 pizza = Pizza(PizzaParams(size="large", crust="thin", ...))
 ```
+
+```cpp
+pizza = Pizza(PizzaParams("large", "thin", ...));
+```
+
+```java
+Pizza pizza = new Pizza(new PizzaParams("large", "thin", ...));
+```
+
+:::
+
 Better, but: Still need to remember all parameters, no fluent interface, validation awkward.
 
 ## The Solution: Separate Construction from Representation
@@ -61,6 +132,8 @@ The Builder pattern separates the construction of a complex object from its repr
 
 **How It Works:**
 
+:::multilang:::
+
 ```python
 pizza = (PizzaBuilder()
          .set_size("large")
@@ -70,9 +143,29 @@ pizza = (PizzaBuilder()
          .build())
 ```
 
+```cpp
+Pizza pizza = PizzaBuilder()
+    .setSize("large")
+    .setCrust("thin")
+    .addTopping("pepperoni")
+    .addTopping("mushroom")
+    .build();
+```
+
+```java
+Pizza pizza = new PizzaBuilder()
+    .setSize("large")
+    .setCrust("thin")
+    .addTopping("pepperoni")
+    .addTopping("mushroom")
+    .build();
+```
+
+:::
+
 Each method:
 1. Sets one aspect of the object being built
-2. Returns `self` to allow chaining
+2. Returns `self` (or `this`) to allow chaining
 3. Accumulates configuration in builder's state
 4. Final `build()` creates and validates the product
 
@@ -180,6 +273,8 @@ Consider Builder when:
 
 Builder pattern often pairs with fluent interface (method chaining):
 
+:::multilang:::
+
 ```python
 def set_size(self, size):
     self.size = size
@@ -189,6 +284,32 @@ def add_topping(self, topping):
     self.toppings.append(topping)
     return self  # Enable chaining
 ```
+
+```cpp
+PizzaBuilder& setSize(const std::string& size) {
+    this->size = size;
+    return *this;  // Enable chaining
+}
+
+PizzaBuilder& addTopping(const std::string& topping) {
+    toppings.push_back(topping);
+    return *this;  // Enable chaining
+}
+```
+
+```java
+public PizzaBuilder setSize(String size) {
+    this.size = size;
+    return this;  // Enable chaining
+}
+
+public PizzaBuilder addTopping(String topping) {
+    toppings.add(topping);
+    return this;  // Enable chaining
+}
+```
+
+:::
 
 Benefits:
 - Reads left-to-right like English
@@ -205,6 +326,8 @@ Trade-off:
 
 Optional enhancement: Director knows how to use builder for specific configurations:
 
+:::multilang:::
+
 ```python
 class PizzaDirector:
     def build_margherita(self, builder):
@@ -216,6 +339,35 @@ class PizzaDirector:
                 .build())
 ```
 
+```cpp
+class PizzaDirector {
+public:
+    Pizza buildMargherita(PizzaBuilder& builder) {
+        return builder
+            .setSize("medium")
+            .setCrust("thin")
+            .addTopping("basil")
+            .addTopping("mozzarella")
+            .build();
+    }
+};
+```
+
+```java
+class PizzaDirector {
+    public Pizza buildMargherita(PizzaBuilder builder) {
+        return builder
+            .setSize("medium")
+            .setCrust("thin")
+            .addTopping("basil")
+            .addTopping("mozzarella")
+            .build();
+    }
+}
+```
+
+:::
+
 Benefits:
 - Encapsulates common construction patterns
 - Reusable across codebase
@@ -225,18 +377,49 @@ Benefits:
 ## Implementation Patterns
 
 **1. Method Chaining (Most Common):**
+
+:::multilang:::
+
 ```python
 builder.set_x().set_y().build()
 ```
 
+```cpp
+builder.setX().setY().build();
+```
+
+```java
+builder.setX().setY().build();
+```
+
+:::
+
 **2. Separate Set Methods:**
+
+:::multilang:::
+
 ```python
 builder.set_x()
 builder.set_y()
 return builder.build()
 ```
 
-**3. With Context Manager:**
+```cpp
+builder.setX();
+builder.setY();
+return builder.build();
+```
+
+```java
+builder.setX();
+builder.setY();
+return builder.build();
+```
+
+:::
+
+**3. With Context Manager (Python-specific):**
+
 ```python
 with PizzaBuilder() as builder:
     builder.set_size("large")
@@ -252,6 +435,9 @@ with PizzaBuilder() as builder:
 
 **Step Builder Pattern:**
 Forces specific order of construction using type system:
+
+:::multilang:::
+
 ```python
 builder.set_size() -> returns CrustBuilder
 .set_crust() -> returns ToppingBuilder
@@ -259,21 +445,73 @@ builder.set_size() -> returns CrustBuilder
 .build() -> returns Pizza
 ```
 
+```cpp
+builder.setSize() -> returns CrustBuilder&
+.setCrust() -> returns ToppingBuilder&
+.addToppings() -> returns FinalBuilder&
+.build() -> returns Pizza
+```
+
+```java
+builder.setSize() // returns CrustBuilder
+.setCrust() // returns ToppingBuilder
+.addToppings() // returns FinalBuilder
+.build() // returns Pizza
+```
+
+:::
+
 **Mutable vs Immutable Builders:**
 - Mutable: Reuse builder for multiple products
 - Immutable: New builder for each product (functional style)
 
 **Generic Builders:**
+
+:::multilang:::
+
 ```python
 GenericBuilder<T>()
     .set("field", value)
     .build()
 ```
+
+```cpp
+GenericBuilder<T>()
+    .set("field", value)
+    .build()
+```
+
+```java
+GenericBuilder<T>()
+    .set("field", value)
+    .build()
+```
+
+:::
+
 Flexible but loses type safety.
 
 ## Real-World Examples
 
-**StringBuilder (Java/C#):**
+**StringBuilder:**
+
+:::multilang:::
+
+```python
+# Python uses list joining or f-strings instead
+result = "".join(["Hello", " ", "World"])
+```
+
+```cpp
+#include <sstream>
+
+std::string result = std::ostringstream()
+    << "Hello"
+    << " "
+    << "World"
+    .str();
+```
+
 ```java
 String result = new StringBuilder()
     .append("Hello")
@@ -282,7 +520,12 @@ String result = new StringBuilder()
     .toString();
 ```
 
+:::
+
 **SQL Query Builders:**
+
+:::multilang:::
+
 ```python
 query = (QueryBuilder()
          .select("name", "email")
@@ -292,7 +535,30 @@ query = (QueryBuilder()
          .build())
 ```
 
+```cpp
+Query query = QueryBuilder()
+    .select({"name", "email"})
+    .fromTable("users")
+    .where("age > 18")
+    .limit(10)
+    .build();
+```
+
+```java
+Query query = new QueryBuilder()
+    .select("name", "email")
+    .fromTable("users")
+    .where("age > 18")
+    .limit(10)
+    .build();
+```
+
+:::
+
 **HTTP Request Builders:**
+
+:::multilang:::
+
 ```python
 request = (HttpRequestBuilder()
            .url("https://api.example.com")
@@ -301,6 +567,26 @@ request = (HttpRequestBuilder()
            .body(json_data)
            .build())
 ```
+
+```cpp
+HttpRequest request = HttpRequestBuilder()
+    .url("https://api.example.com")
+    .method("POST")
+    .header("Auth", "Bearer token")
+    .body(jsonData)
+    .build();
+```
+
+```java
+HttpRequest request = new HttpRequestBuilder()
+    .url("https://api.example.com")
+    .method("POST")
+    .header("Auth", "Bearer token")
+    .body(jsonData)
+    .build();
+```
+
+:::
 
 ## The Verdict
 

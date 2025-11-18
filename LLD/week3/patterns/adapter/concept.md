@@ -30,6 +30,8 @@ Adapter pattern provides a wrapper that translates one interface to another.
 
 **Create an Adapter Class**: The adapter implements the interface your client expects (target interface). Inside, it holds a reference to the object with the incompatible interface (adaptee). The adapter translates calls from target to adaptee.
 
+:::multilang:::
+
 ```python
 # Client expects this interface
 class PaymentGateway(ABC):
@@ -53,7 +55,78 @@ class PaymentAdapter(PaymentGateway):
         return self.legacy_api.makePayment(amount, card, merchant_id, timestamp)
 ```
 
-**Client Code Unchanged**: The client calls `process_payment()` as before. It doesn't know about the adapter or the legacy API. It programs against the interface, not the implementation.
+```cpp
+// Client expects this interface
+class PaymentGateway {
+public:
+    virtual ~PaymentGateway() = default;
+    virtual bool processPayment(double amount, const std::string& card) = 0;
+};
+
+// Third-party library has this interface
+class LegacyPaymentAPI {
+public:
+    bool makePayment(double sum, const std::string& cardInfo,
+                     const std::string& merchantId,
+                     const std::chrono::system_clock::time_point& timestamp) {
+        // legacy implementation
+    }
+};
+
+// Adapter makes them compatible
+class PaymentAdapter : public PaymentGateway {
+private:
+    std::unique_ptr<LegacyPaymentAPI> legacyApi;
+
+public:
+    PaymentAdapter(std::unique_ptr<LegacyPaymentAPI> api)
+        : legacyApi(std::move(api)) {}
+
+    bool processPayment(double amount, const std::string& card) override {
+        // Translate from target interface to adaptee interface
+        std::string merchantId = "MERCHANT_123";
+        auto timestamp = std::chrono::system_clock::now();
+        return legacyApi->makePayment(amount, card, merchantId, timestamp);
+    }
+};
+```
+
+```java
+// Client expects this interface
+interface PaymentGateway {
+    boolean processPayment(double amount, String card);
+}
+
+// Third-party library has this interface
+class LegacyPaymentAPI {
+    public boolean makePayment(double sum, String cardInfo,
+                               String merchantId, LocalDateTime timestamp) {
+        // legacy implementation
+    }
+}
+
+// Adapter makes them compatible
+class PaymentAdapter implements PaymentGateway {
+    private LegacyPaymentAPI legacyApi;
+
+    public PaymentAdapter(LegacyPaymentAPI legacyApi) {
+        this.legacyApi = legacyApi;
+    }
+
+    public boolean processPayment(double amount, String card) {
+        // Translate from target interface to adaptee interface
+        String merchantId = "MERCHANT_123";
+        LocalDateTime timestamp = LocalDateTime.now();
+        return legacyApi.makePayment(amount, card, merchantId, timestamp);
+    }
+}
+```
+
+:::
+
+**Client Code Unchanged**: The client calls `processPayment()` as before. It doesn't know about the adapter or the legacy API. It programs against the interface, not the implementation.
+
+:::multilang:::
 
 ```python
 # Works with any PaymentGateway implementation
@@ -69,9 +142,45 @@ adapter = PaymentAdapter(legacy)
 checkout(adapter, 100, "1234")  # Same call, different implementation
 ```
 
+```cpp
+// Works with any PaymentGateway implementation
+bool checkout(PaymentGateway& gateway, double amount, const std::string& card) {
+    return gateway.processPayment(amount, card);
+}
+
+// Use modern implementation
+auto modern = std::make_unique<ModernPaymentGateway>();
+checkout(*modern, 100, "1234");
+
+// Use legacy implementation via adapter
+auto legacy = std::make_unique<LegacyPaymentAPI>();
+auto adapter = std::make_unique<PaymentAdapter>(std::move(legacy));
+checkout(*adapter, 100, "1234");  // Same call, different implementation
+```
+
+```java
+// Works with any PaymentGateway implementation
+boolean checkout(PaymentGateway gateway, double amount, String card) {
+    return gateway.processPayment(amount, card);
+}
+
+// Use modern implementation
+checkout(new ModernPaymentGateway(), 100, "1234");
+
+// Use legacy implementation via adapter
+LegacyPaymentAPI legacy = new LegacyPaymentAPI();
+PaymentAdapter adapter = new PaymentAdapter(legacy);
+checkout(adapter, 100, "1234");  // Same call, different implementation
+```
+
+:::
+
 **Two Types of Adapters**:
 
 1. **Object Adapter** (uses composition):
+
+:::multilang:::
+
 ```python
 class Adapter:
     def __init__(self, adaptee):
@@ -81,12 +190,66 @@ class Adapter:
         return self.adaptee.incompatible_method()
 ```
 
+```cpp
+class Adapter : public Target {
+private:
+    std::unique_ptr<Adaptee> adaptee;  // Composition
+
+public:
+    Adapter(std::unique_ptr<Adaptee> a) : adaptee(std::move(a)) {}
+
+    void targetMethod() override {
+        return adaptee->incompatibleMethod();
+    }
+};
+```
+
+```java
+class Adapter implements Target {
+    private Adaptee adaptee;  // Composition
+
+    public Adapter(Adaptee adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    public void targetMethod() {
+        return adaptee.incompatibleMethod();
+    }
+}
+```
+
+:::
+
 2. **Class Adapter** (uses multiple inheritance):
+
+:::multilang:::
+
 ```python
 class Adapter(Target, Adaptee):  # Multiple inheritance
     def target_method(self):
         return self.incompatible_method()
 ```
+
+```cpp
+class Adapter : public Target, public Adaptee {  // Multiple inheritance
+public:
+    void targetMethod() override {
+        return incompatibleMethod();
+    }
+};
+```
+
+```java
+// Java doesn't support multiple inheritance of classes
+// Use object adapter pattern instead, or implement multiple interfaces
+class Adapter extends Adaptee implements Target {
+    public void targetMethod() {
+        return incompatibleMethod();
+    }
+}
+```
+
+:::
 
 Object adapter is more flexible and generally preferred. Class adapter only works in languages supporting multiple inheritance.
 

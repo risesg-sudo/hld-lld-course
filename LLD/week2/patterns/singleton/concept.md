@@ -139,6 +139,9 @@ Consider Singleton when:
 Before implementing Singleton, consider these alternatives:
 
 **Dependency Injection:**
+
+:::multilang:::
+
 ```python
 class DatabaseService:
     def __init__(self, connection_pool):
@@ -150,7 +153,43 @@ service1 = DatabaseService(pool)
 service2 = DatabaseService(pool)  # Same pool, different approach
 ```
 
-**Module-Level Instances (Python):**
+```cpp
+class DatabaseService {
+private:
+    std::shared_ptr<ConnectionPool> pool;
+
+public:
+    DatabaseService(std::shared_ptr<ConnectionPool> connection_pool)
+        : pool(connection_pool) {}  // Injected, not created
+};
+
+// Create once, inject everywhere
+auto pool = std::make_shared<ConnectionPool>();
+auto service1 = std::make_unique<DatabaseService>(pool);
+auto service2 = std::make_unique<DatabaseService>(pool);  // Same pool, different approach
+```
+
+```java
+class DatabaseService {
+    private ConnectionPool pool;
+
+    public DatabaseService(ConnectionPool connectionPool) {
+        this.pool = connectionPool;  // Injected, not created
+    }
+}
+
+// Create once, inject everywhere
+ConnectionPool pool = new ConnectionPool();
+DatabaseService service1 = new DatabaseService(pool);
+DatabaseService service2 = new DatabaseService(pool);  // Same pool, different approach
+```
+
+:::
+
+**Module-Level Instances:**
+
+:::multilang:::
+
 ```python
 # logger.py
 _logger_instance = Logger()
@@ -159,7 +198,47 @@ def get_logger():
     return _logger_instance
 ```
 
+```cpp
+// logger.h
+#pragma once
+#include <memory>
+
+class Logger {
+    // Logger implementation
+};
+
+// Get the module-level logger instance
+std::shared_ptr<Logger> getLogger();
+
+// logger.cpp
+#include "logger.h"
+
+namespace {
+    std::shared_ptr<Logger> loggerInstance = std::make_shared<Logger>();
+}
+
+std::shared_ptr<Logger> getLogger() {
+    return loggerInstance;
+}
+```
+
+```java
+// Logger.java
+public class LoggerModule {
+    private static final Logger LOGGER_INSTANCE = new Logger();
+
+    public static Logger getLogger() {
+        return LOGGER_INSTANCE;
+    }
+}
+```
+
+:::
+
 **Factory with Cache:**
+
+:::multilang:::
+
 ```python
 class ConnectionFactory:
     _cache = {}
@@ -170,6 +249,38 @@ class ConnectionFactory:
             cls._cache[db_name] = Connection(db_name)
         return cls._cache[db_name]
 ```
+
+```cpp
+class ConnectionFactory {
+private:
+    static std::unordered_map<std::string, std::shared_ptr<Connection>> cache;
+
+public:
+    static std::shared_ptr<Connection> getConnection(const std::string& dbName) {
+        if (cache.find(dbName) == cache.end()) {
+            cache[dbName] = std::make_shared<Connection>(dbName);
+        }
+        return cache[dbName];
+    }
+};
+
+std::unordered_map<std::string, std::shared_ptr<Connection>> ConnectionFactory::cache;
+```
+
+```java
+class ConnectionFactory {
+    private static Map<String, Connection> cache = new HashMap<>();
+
+    public static Connection getConnection(String dbName) {
+        if (!cache.containsKey(dbName)) {
+            cache.put(dbName, new Connection(dbName));
+        }
+        return cache.get(dbName);
+    }
+}
+```
+
+:::
 
 ## Implementation Considerations
 

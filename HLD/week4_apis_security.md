@@ -157,6 +157,7 @@ See `/HLD/examples/week4/capacity_estimation_guide.md` for detailed calculations
 - Low-frequency data changes
 
 **Example:**
+:::multilang
 ```python
 import time
 import requests
@@ -169,7 +170,103 @@ def short_polling(url, interval=5):
             if data:
                 process_data(data)
         time.sleep(interval)  # Wait before next poll
+
+def process_data(data):
+    print(f"Processing: {data}")
 ```
+
+```cpp
+#include <iostream>
+#include <string>
+#include <thread>
+#include <chrono>
+#include <curl/curl.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
+void process_data(const json& data) {
+    std::cout << "Processing: " << data.dump() << std::endl;
+}
+
+void short_polling(const std::string& url, int interval = 5) {
+    CURL* curl = curl_easy_init();
+    if (!curl) return;
+
+    while (true) {
+        std::string response_data;
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
+            [](void* ptr, size_t size, size_t nmemb, std::string* data) {
+                data->append((char*)ptr, size * nmemb);
+                return size * nmemb;
+            });
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        CURLcode res = curl_easy_perform(curl);
+        if (res == CURLE_OK) {
+            auto data = json::parse(response_data, nullptr, false);
+            if (!data.is_null() && !data.empty()) {
+                process_data(data);
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(interval));
+    }
+
+    curl_easy_cleanup(curl);
+}
+```
+
+```java
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.time.Duration;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+public class ShortPolling {
+    private final HttpClient client;
+    private final Gson gson;
+
+    public ShortPolling() {
+        this.client = HttpClient.newHttpClient();
+        this.gson = new Gson();
+    }
+
+    public void shortPolling(String url, int interval) throws Exception {
+        while (true) {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(Duration.ofSeconds(10))
+                .GET()
+                .build();
+
+            HttpResponse<String> response = client.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() == 200) {
+                String body = response.body();
+                if (body != null && !body.isEmpty()) {
+                    JsonObject data = gson.fromJson(body, JsonObject.class);
+                    processData(data);
+                }
+            }
+
+            Thread.sleep(interval * 1000);
+        }
+    }
+
+    private void processData(JsonObject data) {
+        System.out.println("Processing: " + data);
+    }
+}
+```
+:::
 
 ### Long Polling
 
@@ -195,6 +292,7 @@ def short_polling(url, interval=5):
 - Live updates with moderate frequency
 
 **Example:**
+:::multilang
 ```python
 # Server side (Flask)
 from flask import Flask, jsonify
@@ -216,6 +314,8 @@ def long_poll():
     return jsonify({}), 204  # No content
 
 # Client side
+import requests
+
 def long_polling_client(url):
     while True:
         response = requests.get(url, timeout=35)
@@ -223,7 +323,159 @@ def long_polling_client(url):
             data = response.json()
             process_data(data)
         # Immediately reconnect
+
+def process_data(data):
+    print(f"Processing: {data}")
 ```
+
+```cpp
+// Server side (using Crow framework)
+#include <crow.h>
+#include <queue>
+#include <mutex>
+#include <chrono>
+#include <thread>
+
+std::queue<std::string> message_queue;
+std::mutex queue_mutex;
+
+void setup_long_poll_server() {
+    crow::SimpleApp app;
+
+    CROW_ROUTE(app, "/long-poll")
+    ([]() {
+        int timeout = 30;  // 30 seconds
+        auto start_time = std::chrono::steady_clock::now();
+
+        while (true) {
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+                now - start_time
+            ).count();
+
+            if (elapsed >= timeout) {
+                return crow::response(204);  // No content
+            }
+
+            {
+                std::lock_guard<std::mutex> lock(queue_mutex);
+                if (!message_queue.empty()) {
+                    std::string msg = message_queue.front();
+                    message_queue.pop();
+                    return crow::response(200, msg);
+                }
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+    });
+
+    app.port(8080).run();
+}
+
+// Client side
+#include <curl/curl.h>
+
+void long_polling_client(const std::string& url) {
+    CURL* curl = curl_easy_init();
+
+    while (true) {
+        std::string response_data;
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 35);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
+            [](void* ptr, size_t size, size_t nmemb, std::string* data) {
+                data->append((char*)ptr, size * nmemb);
+                return size * nmemb;
+            });
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+
+        CURLcode res = curl_easy_perform(curl);
+        if (res == CURLE_OK) {
+            long response_code;
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+            if (response_code == 200) {
+                process_data(response_data);
+            }
+        }
+        // Immediately reconnect
+    }
+
+    curl_easy_cleanup(curl);
+}
+```
+
+```java
+// Server side (using Spring Boot)
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+@RestController
+public class LongPollController {
+    private final ConcurrentLinkedQueue<String> messageQueue = new ConcurrentLinkedQueue<>();
+
+    @GetMapping("/long-poll")
+    public ResponseEntity<String> longPoll() {
+        int timeout = 30;  // 30 seconds
+        long startTime = System.currentTimeMillis();
+
+        while ((System.currentTimeMillis() - startTime) / 1000 < timeout) {
+            String message = messageQueue.poll();
+            if (message != null) {
+                return ResponseEntity.ok(message);
+            }
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        return ResponseEntity.noContent().build();  // 204
+    }
+}
+
+// Client side
+import java.net.http.*;
+import java.net.URI;
+import java.time.Duration;
+
+public class LongPollingClient {
+    private final HttpClient client;
+
+    public LongPollingClient() {
+        this.client = HttpClient.newHttpClient();
+    }
+
+    public void longPollingClient(String url) throws Exception {
+        while (true) {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(Duration.ofSeconds(35))
+                .GET()
+                .build();
+
+            HttpResponse<String> response = client.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() == 200) {
+                processData(response.body());
+            }
+            // Immediately reconnect
+        }
+    }
+
+    private void processData(String data) {
+        System.out.println("Processing: " + data);
+    }
+}
+```
+:::
 
 ### Server-Sent Events (SSE)
 
@@ -347,6 +599,7 @@ Rate limiting protects your system from:
 - Refill rate (tokens per second)
 
 **Example:**
+:::multilang
 ```python
 import time
 
@@ -371,6 +624,89 @@ class TokenBucket:
         self.tokens = min(self.capacity, self.tokens + tokens_to_add)
         self.last_refill = now
 ```
+
+```cpp
+#include <chrono>
+#include <algorithm>
+#include <mutex>
+
+class TokenBucket {
+private:
+    double capacity;
+    double tokens;
+    double refill_rate;
+    std::chrono::steady_clock::time_point last_refill;
+    std::mutex mtx;
+
+public:
+    TokenBucket(double capacity, double refill_rate)
+        : capacity(capacity), tokens(capacity), refill_rate(refill_rate),
+          last_refill(std::chrono::steady_clock::now()) {}
+
+    bool allow_request() {
+        std::lock_guard<std::mutex> lock(mtx);
+        refill();
+        if (tokens >= 1.0) {
+            tokens -= 1.0;
+            return true;
+        }
+        return false;
+    }
+
+private:
+    void refill() {
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration<double>(now - last_refill).count();
+        double tokens_to_add = elapsed * refill_rate;
+        tokens = std::min(capacity, tokens + tokens_to_add);
+        last_refill = now;
+    }
+};
+```
+
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class TokenBucket {
+    private final double capacity;
+    private double tokens;
+    private final double refillRate;
+    private long lastRefill;
+    private final Lock lock;
+
+    public TokenBucket(double capacity, double refillRate) {
+        this.capacity = capacity;
+        this.tokens = capacity;
+        this.refillRate = refillRate;
+        this.lastRefill = System.currentTimeMillis();
+        this.lock = new ReentrantLock();
+    }
+
+    public boolean allowRequest() {
+        lock.lock();
+        try {
+            refill();
+            if (tokens >= 1.0) {
+                tokens -= 1.0;
+                return true;
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void refill() {
+        long now = System.currentTimeMillis();
+        double elapsed = (now - lastRefill) / 1000.0;
+        double tokensToAdd = elapsed * refillRate;
+        tokens = Math.min(capacity, tokens + tokensToAdd);
+        lastRefill = now;
+    }
+}
+```
+:::
 
 **Use Cases:**
 - API rate limiting (AWS API Gateway uses this)
@@ -398,6 +734,7 @@ class TokenBucket:
 - Leak rate (requests per second)
 
 **Example:**
+:::multilang
 ```python
 from collections import deque
 import time
@@ -427,6 +764,106 @@ class LeakyBucket:
         self.last_leak = now
 ```
 
+```cpp
+#include <queue>
+#include <chrono>
+#include <mutex>
+#include <algorithm>
+
+class LeakyBucket {
+private:
+    int capacity;
+    double leak_rate;
+    std::queue<double> queue;
+    std::chrono::steady_clock::time_point last_leak;
+    std::mutex mtx;
+
+public:
+    LeakyBucket(int capacity, double leak_rate)
+        : capacity(capacity), leak_rate(leak_rate),
+          last_leak(std::chrono::steady_clock::now()) {}
+
+    bool allow_request() {
+        std::lock_guard<std::mutex> lock(mtx);
+        leak();
+        if (queue.size() < static_cast<size_t>(capacity)) {
+            auto now = std::chrono::steady_clock::now();
+            double timestamp = std::chrono::duration<double>(
+                now.time_since_epoch()
+            ).count();
+            queue.push(timestamp);
+            return true;
+        }
+        return false;
+    }
+
+private:
+    void leak() {
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration<double>(now - last_leak).count();
+        int leaks = static_cast<int>(elapsed * leak_rate);
+
+        int to_leak = std::min(leaks, static_cast<int>(queue.size()));
+        for (int i = 0; i < to_leak; i++) {
+            queue.pop();
+        }
+
+        last_leak = now;
+    }
+};
+```
+
+```java
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class LeakyBucket {
+    private final int capacity;
+    private final double leakRate;
+    private final Queue<Long> queue;
+    private long lastLeak;
+    private final Lock lock;
+
+    public LeakyBucket(int capacity, double leakRate) {
+        this.capacity = capacity;
+        this.leakRate = leakRate;
+        this.queue = new LinkedList<>();
+        this.lastLeak = System.currentTimeMillis();
+        this.lock = new ReentrantLock();
+    }
+
+    public boolean allowRequest() {
+        lock.lock();
+        try {
+            leak();
+            if (queue.size() < capacity) {
+                queue.add(System.currentTimeMillis());
+                return true;
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void leak() {
+        long now = System.currentTimeMillis();
+        double elapsed = (now - lastLeak) / 1000.0;
+        int leaks = (int) (elapsed * leakRate);
+
+        int toLeak = Math.min(leaks, queue.size());
+        for (int i = 0; i < toLeak; i++) {
+            queue.poll();
+        }
+
+        lastLeak = now;
+    }
+}
+```
+:::
+
 **Use Cases:**
 - Network traffic shaping
 - Protecting backend services
@@ -454,6 +891,7 @@ class LeakyBucket:
 - Request limit per window
 
 **Example:**
+:::multilang
 ```python
 import time
 
@@ -477,6 +915,87 @@ class FixedWindowCounter:
             return True
         return False
 ```
+
+```cpp
+#include <chrono>
+#include <mutex>
+
+class FixedWindowCounter {
+private:
+    int limit;
+    double window_size;
+    int counter;
+    std::chrono::steady_clock::time_point window_start;
+    std::mutex mtx;
+
+public:
+    FixedWindowCounter(int limit, double window_size)
+        : limit(limit), window_size(window_size), counter(0),
+          window_start(std::chrono::steady_clock::now()) {}
+
+    bool allow_request() {
+        std::lock_guard<std::mutex> lock(mtx);
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration<double>(now - window_start).count();
+
+        // Reset if new window
+        if (elapsed >= window_size) {
+            counter = 0;
+            window_start = now;
+        }
+
+        if (counter < limit) {
+            counter++;
+            return true;
+        }
+        return false;
+    }
+};
+```
+
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class FixedWindowCounter {
+    private final int limit;
+    private final double windowSize;
+    private int counter;
+    private long windowStart;
+    private final Lock lock;
+
+    public FixedWindowCounter(int limit, double windowSize) {
+        this.limit = limit;
+        this.windowSize = windowSize;
+        this.counter = 0;
+        this.windowStart = System.currentTimeMillis();
+        this.lock = new ReentrantLock();
+    }
+
+    public boolean allowRequest() {
+        lock.lock();
+        try {
+            long now = System.currentTimeMillis();
+            double elapsed = (now - windowStart) / 1000.0;
+
+            // Reset if new window
+            if (elapsed >= windowSize) {
+                counter = 0;
+                windowStart = now;
+            }
+
+            if (counter < limit) {
+                counter++;
+                return true;
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+```
+:::
 
 **Boundary Problem Example:**
 ```
@@ -512,6 +1031,7 @@ Total in 2 seconds: 2000 requests (2x limit!)
 - Request limit
 
 **Example:**
+:::multilang
 ```python
 import time
 from collections import deque
@@ -534,6 +1054,84 @@ class SlidingWindowLog:
             return True
         return False
 ```
+
+```cpp
+#include <deque>
+#include <chrono>
+#include <mutex>
+
+class SlidingWindowLog {
+private:
+    int limit;
+    double window_size;
+    std::deque<double> log;
+    std::mutex mtx;
+
+public:
+    SlidingWindowLog(int limit, double window_size)
+        : limit(limit), window_size(window_size) {}
+
+    bool allow_request() {
+        std::lock_guard<std::mutex> lock(mtx);
+        auto now = std::chrono::steady_clock::now();
+        double timestamp = std::chrono::duration<double>(
+            now.time_since_epoch()
+        ).count();
+
+        // Remove old entries
+        while (!log.empty() && log.front() <= timestamp - window_size) {
+            log.pop_front();
+        }
+
+        if (log.size() < static_cast<size_t>(limit)) {
+            log.push_back(timestamp);
+            return true;
+        }
+        return false;
+    }
+};
+```
+
+```java
+import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class SlidingWindowLog {
+    private final int limit;
+    private final double windowSize;
+    private final LinkedList<Double> log;
+    private final Lock lock;
+
+    public SlidingWindowLog(int limit, double windowSize) {
+        this.limit = limit;
+        this.windowSize = windowSize;
+        this.log = new LinkedList<>();
+        this.lock = new ReentrantLock();
+    }
+
+    public boolean allowRequest() {
+        lock.lock();
+        try {
+            double now = System.currentTimeMillis() / 1000.0;
+
+            // Remove old entries
+            while (!log.isEmpty() && log.getFirst() <= now - windowSize) {
+                log.removeFirst();
+            }
+
+            if (log.size() < limit) {
+                log.add(now);
+                return true;
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+```
+:::
 
 **Use Cases:**
 - Precise rate limiting needed
@@ -563,6 +1161,7 @@ Requests in sliding window =
 - Slightly complex logic
 
 **Example:**
+:::multilang
 ```python
 import time
 
@@ -594,6 +1193,105 @@ class SlidingWindowCounter:
             return True
         return False
 ```
+
+```cpp
+#include <chrono>
+#include <mutex>
+
+class SlidingWindowCounter {
+private:
+    int limit;
+    double window_size;
+    std::chrono::steady_clock::time_point current_window_start;
+    int current_count;
+    int previous_count;
+    std::mutex mtx;
+
+public:
+    SlidingWindowCounter(int limit, double window_size)
+        : limit(limit), window_size(window_size),
+          current_window_start(std::chrono::steady_clock::now()),
+          current_count(0), previous_count(0) {}
+
+    bool allow_request() {
+        std::lock_guard<std::mutex> lock(mtx);
+        auto now = std::chrono::steady_clock::now();
+        double elapsed = std::chrono::duration<double>(
+            now - current_window_start
+        ).count();
+
+        // Move to next window if needed
+        if (elapsed >= window_size) {
+            previous_count = current_count;
+            current_count = 0;
+            current_window_start = now;
+            elapsed = 0;
+        }
+
+        // Calculate weighted count
+        double previous_weight = 1.0 - (elapsed / window_size);
+        double estimated_count = (previous_count * previous_weight) + current_count;
+
+        if (estimated_count < limit) {
+            current_count++;
+            return true;
+        }
+        return false;
+    }
+};
+```
+
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class SlidingWindowCounter {
+    private final int limit;
+    private final double windowSize;
+    private long currentWindowStart;
+    private int currentCount;
+    private int previousCount;
+    private final Lock lock;
+
+    public SlidingWindowCounter(int limit, double windowSize) {
+        this.limit = limit;
+        this.windowSize = windowSize;
+        this.currentWindowStart = System.currentTimeMillis();
+        this.currentCount = 0;
+        this.previousCount = 0;
+        this.lock = new ReentrantLock();
+    }
+
+    public boolean allowRequest() {
+        lock.lock();
+        try {
+            long now = System.currentTimeMillis();
+            double elapsed = (now - currentWindowStart) / 1000.0;
+
+            // Move to next window if needed
+            if (elapsed >= windowSize) {
+                previousCount = currentCount;
+                currentCount = 0;
+                currentWindowStart = now;
+                elapsed = 0;
+            }
+
+            // Calculate weighted count
+            double previousWeight = 1.0 - (elapsed / windowSize);
+            double estimatedCount = (previousCount * previousWeight) + currentCount;
+
+            if (estimatedCount < limit) {
+                currentCount++;
+                return true;
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+```
+:::
 
 **Use Cases:**
 - Most production systems
@@ -1132,6 +1830,7 @@ HMACSHA256(
 - Include minimal data in payload
 
 **Example:**
+:::multilang
 ```python
 import jwt
 from datetime import datetime, timedelta
@@ -1157,6 +1856,96 @@ def verify_token(token):
     except jwt.InvalidTokenError:
         return None  # Invalid token
 ```
+
+```cpp
+#include <jwt-cpp/jwt.h>
+#include <chrono>
+#include <string>
+#include <optional>
+
+const std::string SECRET_KEY = "your-secret-key";
+
+// Generate JWT
+std::string generate_token(int user_id) {
+    auto now = std::chrono::system_clock::now();
+    auto exp = now + std::chrono::minutes(15);
+
+    auto token = jwt::create()
+        .set_issuer("auth_service")
+        .set_type("JWT")
+        .set_payload_claim("user_id", jwt::claim(std::to_string(user_id)))
+        .set_issued_at(now)
+        .set_expires_at(exp)
+        .sign(jwt::algorithm::hs256{SECRET_KEY});
+
+    return token;
+}
+
+// Verify JWT
+std::optional<int> verify_token(const std::string& token) {
+    try {
+        auto verifier = jwt::verify()
+            .allow_algorithm(jwt::algorithm::hs256{SECRET_KEY})
+            .with_issuer("auth_service");
+
+        auto decoded = jwt::decode(token);
+        verifier.verify(decoded);
+
+        int user_id = std::stoi(
+            decoded.get_payload_claim("user_id").as_string()
+        );
+        return user_id;
+    } catch (const std::exception& e) {
+        return std::nullopt;  // Token invalid or expired
+    }
+}
+```
+
+```java
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Date;
+import java.util.Optional;
+
+public class JWTService {
+    private static final String SECRET_KEY = "your-secret-key-must-be-at-least-256-bits";
+    private static final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+
+    // Generate JWT
+    public static String generateToken(int userId) {
+        long nowMillis = System.currentTimeMillis();
+        Date now = new Date(nowMillis);
+        Date exp = new Date(nowMillis + 15 * 60 * 1000);  // 15 minutes
+
+        return Jwts.builder()
+            .setIssuer("auth_service")
+            .claim("user_id", userId)
+            .setIssuedAt(now)
+            .setExpiration(exp)
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+    // Verify JWT
+    public static Optional<Integer> verifyToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+            return Optional.of(claims.get("user_id", Integer.class));
+        } catch (ExpiredJwtException e) {
+            return Optional.empty();  // Token expired
+        } catch (JwtException e) {
+            return Optional.empty();  // Invalid token
+        }
+    }
+}
+```
+:::
 
 See `/HLD/examples/week4/jwt_auth_example.py` for complete implementation.
 
@@ -1465,6 +2254,7 @@ Set-Cookie: session_id=abc123; HttpOnly; Secure; SameSite=Strict
 ### 6. Password Security
 
 **Hashing:**
+:::multilang
 ```python
 import bcrypt
 
@@ -1477,6 +2267,38 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode(), hashed.encode())
 ```
+
+```cpp
+#include <string>
+#include <bcrypt/BCrypt.hpp>
+
+// Hash password
+std::string hash_password(const std::string& password) {
+    return BCrypt::generateHash(password, 12);
+}
+
+// Verify password
+bool verify_password(const std::string& password, const std::string& hashed) {
+    return BCrypt::validatePassword(password, hashed);
+}
+```
+
+```java
+import org.mindrot.jbcrypt.BCrypt;
+
+public class PasswordService {
+    // Hash password
+    public static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt(12));
+    }
+
+    // Verify password
+    public static boolean verifyPassword(String password, String hashed) {
+        return BCrypt.checkpw(password, hashed);
+    }
+}
+```
+:::
 
 **Best Practices:**
 - Never store plain text passwords
@@ -1891,6 +2713,7 @@ OPEN ─────────────────┘
 ```
 
 **Implementation:**
+:::multilang
 ```python
 from enum import Enum
 import time
@@ -1950,6 +2773,190 @@ class CircuitBreaker:
                 self.state = CircuitState.OPEN
 ```
 
+```cpp
+#include <functional>
+#include <mutex>
+#include <chrono>
+#include <exception>
+#include <stdexcept>
+
+enum class CircuitState {
+    CLOSED,
+    OPEN,
+    HALF_OPEN
+};
+
+class CircuitBreaker {
+private:
+    int failure_threshold;
+    int timeout;  // seconds
+    int half_open_max_calls;
+
+    CircuitState state;
+    int failure_count;
+    std::chrono::steady_clock::time_point last_failure_time;
+    int half_open_calls;
+    std::mutex mtx;
+
+public:
+    CircuitBreaker(int failure_threshold = 5, int timeout = 60, int half_open_max_calls = 3)
+        : failure_threshold(failure_threshold), timeout(timeout),
+          half_open_max_calls(half_open_max_calls),
+          state(CircuitState::CLOSED), failure_count(0), half_open_calls(0) {}
+
+    template<typename Func, typename... Args>
+    auto call(Func&& func, Args&&... args) -> decltype(func(args...)) {
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            if (state == CircuitState::OPEN) {
+                auto now = std::chrono::steady_clock::now();
+                auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+                    now - last_failure_time
+                ).count();
+
+                if (elapsed >= timeout) {
+                    state = CircuitState::HALF_OPEN;
+                    half_open_calls = 0;
+                } else {
+                    throw std::runtime_error("Circuit breaker is OPEN");
+                }
+            }
+
+            if (state == CircuitState::HALF_OPEN) {
+                if (half_open_calls >= half_open_max_calls) {
+                    throw std::runtime_error("Circuit breaker HALF_OPEN limit reached");
+                }
+                half_open_calls++;
+            }
+        }
+
+        try {
+            auto result = func(std::forward<Args>(args)...);
+            on_success();
+            return result;
+        } catch (...) {
+            on_failure();
+            throw;
+        }
+    }
+
+private:
+    void on_success() {
+        std::lock_guard<std::mutex> lock(mtx);
+        if (state == CircuitState::HALF_OPEN) {
+            state = CircuitState::CLOSED;
+        }
+        failure_count = 0;
+    }
+
+    void on_failure() {
+        std::lock_guard<std::mutex> lock(mtx);
+        failure_count++;
+        last_failure_time = std::chrono::steady_clock::now();
+
+        if (failure_count >= failure_threshold) {
+            state = CircuitState::OPEN;
+        }
+    }
+};
+```
+
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
+
+public class CircuitBreaker {
+    private enum CircuitState {
+        CLOSED, OPEN, HALF_OPEN
+    }
+
+    private final int failureThreshold;
+    private final int timeout;  // seconds
+    private final int halfOpenMaxCalls;
+
+    private CircuitState state;
+    private int failureCount;
+    private long lastFailureTime;
+    private int halfOpenCalls;
+    private final Lock lock;
+
+    public CircuitBreaker(int failureThreshold, int timeout, int halfOpenMaxCalls) {
+        this.failureThreshold = failureThreshold;
+        this.timeout = timeout;
+        this.halfOpenMaxCalls = halfOpenMaxCalls;
+        this.state = CircuitState.CLOSED;
+        this.failureCount = 0;
+        this.halfOpenCalls = 0;
+        this.lock = new ReentrantLock();
+    }
+
+    public CircuitBreaker() {
+        this(5, 60, 3);  // Default values
+    }
+
+    public <T> T call(Supplier<T> func) throws Exception {
+        lock.lock();
+        try {
+            if (state == CircuitState.OPEN) {
+                long now = System.currentTimeMillis() / 1000;
+                if (now - lastFailureTime >= timeout) {
+                    state = CircuitState.HALF_OPEN;
+                    halfOpenCalls = 0;
+                } else {
+                    throw new Exception("Circuit breaker is OPEN");
+                }
+            }
+
+            if (state == CircuitState.HALF_OPEN) {
+                if (halfOpenCalls >= halfOpenMaxCalls) {
+                    throw new Exception("Circuit breaker HALF_OPEN limit reached");
+                }
+                halfOpenCalls++;
+            }
+        } finally {
+            lock.unlock();
+        }
+
+        try {
+            T result = func.get();
+            onSuccess();
+            return result;
+        } catch (Exception e) {
+            onFailure();
+            throw e;
+        }
+    }
+
+    private void onSuccess() {
+        lock.lock();
+        try {
+            if (state == CircuitState.HALF_OPEN) {
+                state = CircuitState.CLOSED;
+            }
+            failureCount = 0;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void onFailure() {
+        lock.lock();
+        try {
+            failureCount++;
+            lastFailureTime = System.currentTimeMillis() / 1000;
+
+            if (failureCount >= failureThreshold) {
+                state = CircuitState.OPEN;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+```
+:::
+
 See `/HLD/examples/week4/circuit_breaker.py` for complete implementation.
 
 ### Retry Strategies
@@ -1967,7 +2974,10 @@ def retry_fixed(func, max_attempts=3, delay=1):
 ```
 
 #### 2. Exponential Backoff
+:::multilang
 ```python
+import time
+
 def retry_exponential_backoff(func, max_attempts=5, base_delay=1, max_delay=60):
     for attempt in range(max_attempts):
         try:
@@ -1979,9 +2989,71 @@ def retry_exponential_backoff(func, max_attempts=5, base_delay=1, max_delay=60):
             time.sleep(delay)
 ```
 
+```cpp
+#include <functional>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+#include <cmath>
+
+template<typename Func>
+auto retry_exponential_backoff(Func func, int max_attempts = 5,
+                              int base_delay = 1, int max_delay = 60) {
+    for (int attempt = 0; attempt < max_attempts; attempt++) {
+        try {
+            return func();
+        } catch (...) {
+            if (attempt == max_attempts - 1) {
+                throw;
+            }
+            int delay = std::min(
+                base_delay * static_cast<int>(std::pow(2, attempt)),
+                max_delay
+            );
+            std::this_thread::sleep_for(std::chrono::seconds(delay));
+        }
+    }
+    throw std::runtime_error("Max retries exceeded");
+}
+```
+
+```java
+import java.util.function.Supplier;
+
+public class RetryStrategy {
+    public static <T> T retryExponentialBackoff(Supplier<T> func,
+                                                 int maxAttempts,
+                                                 int baseDelay,
+                                                 int maxDelay) throws Exception {
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                return func.get();
+            } catch (Exception e) {
+                if (attempt == maxAttempts - 1) {
+                    throw e;
+                }
+                int delay = Math.min(
+                    baseDelay * (int) Math.pow(2, attempt),
+                    maxDelay
+                );
+                Thread.sleep(delay * 1000);
+            }
+        }
+        throw new Exception("Max retries exceeded");
+    }
+
+    public static <T> T retryExponentialBackoff(Supplier<T> func) throws Exception {
+        return retryExponentialBackoff(func, 5, 1, 60);
+    }
+}
+```
+:::
+
 #### 3. Exponential Backoff with Jitter
+:::multilang
 ```python
 import random
+import time
 
 def retry_with_jitter(func, max_attempts=5, base_delay=1, max_delay=60):
     for attempt in range(max_attempts):
@@ -1994,6 +3066,78 @@ def retry_with_jitter(func, max_attempts=5, base_delay=1, max_delay=60):
             jittered_delay = delay * (0.5 + random.random() * 0.5)
             time.sleep(jittered_delay)
 ```
+
+```cpp
+#include <functional>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+template<typename Func>
+auto retry_with_jitter(Func func, int max_attempts = 5,
+                       int base_delay = 1, int max_delay = 60) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.5, 1.0);
+
+    for (int attempt = 0; attempt < max_attempts; attempt++) {
+        try {
+            return func();
+        } catch (...) {
+            if (attempt == max_attempts - 1) {
+                throw;
+            }
+            int delay = std::min(
+                base_delay * static_cast<int>(std::pow(2, attempt)),
+                max_delay
+            );
+            double jittered_delay = delay * dis(gen);
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(static_cast<int>(jittered_delay * 1000))
+            );
+        }
+    }
+    throw std::runtime_error("Max retries exceeded");
+}
+```
+
+```java
+import java.util.Random;
+import java.util.function.Supplier;
+
+public class RetryWithJitter {
+    private static final Random random = new Random();
+
+    public static <T> T retryWithJitter(Supplier<T> func,
+                                        int maxAttempts,
+                                        int baseDelay,
+                                        int maxDelay) throws Exception {
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                return func.get();
+            } catch (Exception e) {
+                if (attempt == maxAttempts - 1) {
+                    throw e;
+                }
+                int delay = Math.min(
+                    baseDelay * (int) Math.pow(2, attempt),
+                    maxDelay
+                );
+                double jitteredDelay = delay * (0.5 + random.nextDouble() * 0.5);
+                Thread.sleep((long) (jitteredDelay * 1000));
+            }
+        }
+        throw new Exception("Max retries exceeded");
+    }
+
+    public static <T> T retryWithJitter(Supplier<T> func) throws Exception {
+        return retryWithJitter(func, 5, 1, 60);
+    }
+}
+```
+:::
 
 ### Bulkhead Pattern
 

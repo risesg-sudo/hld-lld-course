@@ -27,11 +27,28 @@ The fundamental issue: inheritance is too rigid for dynamic, combinable behavior
 Decorator pattern wraps objects in layers, each layer adding behavior.
 
 Instead of `CoffeeWithMilkAndSugar` class, create:
+
+:::multilang:::
+
 ```python
 coffee = SimpleCoffee()           # $2.00
 coffee = MilkDecorator(coffee)    # $2.00 + $0.50
 coffee = SugarDecorator(coffee)   # $2.50 + $0.25 = $2.75
 ```
+
+```cpp
+auto coffee = std::make_unique<SimpleCoffee>();                    // $2.00
+coffee = std::make_unique<MilkDecorator>(std::move(coffee));       // $2.00 + $0.50
+coffee = std::make_unique<SugarDecorator>(std::move(coffee));      // $2.50 + $0.25 = $2.75
+```
+
+```java
+Beverage coffee = new SimpleCoffee();              // $2.00
+coffee = new MilkDecorator(coffee);                // $2.00 + $0.50
+coffee = new SugarDecorator(coffee);               // $2.50 + $0.25 = $2.75
+```
+
+:::
 
 **How It Works**:
 
@@ -39,6 +56,8 @@ coffee = SugarDecorator(coffee)   # $2.50 + $0.25 = $2.75
 2. **Base Component**: Simple object with core functionality
 3. **Decorator**: Implements same interface, wraps another component
 4. **Stacking**: Decorators can wrap other decorators
+
+:::multilang:::
 
 ```python
 class Beverage(ABC):
@@ -57,7 +76,64 @@ class MilkDecorator(Beverage):
         return self._beverage.get_cost() + 0.50
 ```
 
+```cpp
+class Beverage {
+public:
+    virtual ~Beverage() = default;
+    virtual double getCost() const = 0;
+};
+
+class SimpleCoffee : public Beverage {
+public:
+    double getCost() const override {
+        return 2.00;
+    }
+};
+
+class MilkDecorator : public Beverage {
+private:
+    std::unique_ptr<Beverage> beverage;
+
+public:
+    MilkDecorator(std::unique_ptr<Beverage> bev)
+        : beverage(std::move(bev)) {}
+
+    double getCost() const override {
+        return beverage->getCost() + 0.50;
+    }
+};
+```
+
+```java
+interface Beverage {
+    double getCost();
+}
+
+class SimpleCoffee implements Beverage {
+    public double getCost() {
+        return 2.00;
+    }
+}
+
+class MilkDecorator implements Beverage {
+    private Beverage beverage;
+
+    public MilkDecorator(Beverage beverage) {
+        this.beverage = beverage;
+    }
+
+    public double getCost() {
+        return beverage.getCost() + 0.50;
+    }
+}
+```
+
+:::
+
 Build combinations at runtime:
+
+:::multilang:::
+
 ```python
 # Just coffee
 order1 = SimpleCoffee()  # $2.00
@@ -68,6 +144,38 @@ order2 = MilkDecorator(SimpleCoffee())  # $2.50
 # Coffee with milk and sugar
 order3 = SugarDecorator(MilkDecorator(SimpleCoffee()))  # $2.75
 ```
+
+```cpp
+// Just coffee
+auto order1 = std::make_unique<SimpleCoffee>();  // $2.00
+
+// Coffee with milk
+auto order2 = std::make_unique<MilkDecorator>(
+    std::make_unique<SimpleCoffee>()
+);  // $2.50
+
+// Coffee with milk and sugar
+auto order3 = std::make_unique<SugarDecorator>(
+    std::make_unique<MilkDecorator>(
+        std::make_unique<SimpleCoffee>()
+    )
+);  // $2.75
+```
+
+```java
+// Just coffee
+Beverage order1 = new SimpleCoffee();  // $2.00
+
+// Coffee with milk
+Beverage order2 = new MilkDecorator(new SimpleCoffee());  // $2.50
+
+// Coffee with milk and sugar
+Beverage order3 = new SugarDecorator(
+    new MilkDecorator(new SimpleCoffee())
+);  // $2.75
+```
+
+:::
 
 With 3 add-ons: 4 classes (base + 3 decorators) instead of 8 subclasses. With 5 add-ons: 6 classes instead of 32.
 

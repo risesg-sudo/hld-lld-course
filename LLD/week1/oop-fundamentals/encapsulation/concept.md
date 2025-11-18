@@ -4,10 +4,22 @@
 
 Imagine you're building a banking application. You create a `BankAccount` class with a `balance` attribute. Any part of your application can directly access and modify this balance:
 
+:::multilang
 ```python
 account.balance = -1000000  # Uh oh, negative balance!
 account.balance = "invalid"  # Data corruption!
 ```
+
+```cpp
+account.balance = -1000000;  // Uh oh, negative balance!
+account.balance = "invalid";  // Compile error, but shows the risk!
+```
+
+```java
+account.balance = -1000000;  // Uh oh, negative balance!
+account.balance = "invalid";  // Compile error, but shows the risk!
+```
+:::
 
 Without protection, critical data is vulnerable to corruption, unauthorized access, and violation of business rules. How do we solve this?
 

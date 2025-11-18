@@ -501,6 +501,7 @@ Replication creates copies of data across multiple database servers.
 - Writes don't scale
 
 **Replication Lag Mitigation:**
+:::multilang
 ```python
 # Read your own writes pattern
 def create_post(user_id, content):
@@ -522,6 +523,83 @@ def get_post(post_id):
     # Fall back to replica
     return replica_db.get_post(post_id)
 ```
+
+```cpp
+#include <string>
+#include <optional>
+
+// Assuming global dependencies
+extern MasterDB master_db;
+extern ReplicaDB replica_db;
+extern Cache cache;
+
+// Read your own writes pattern
+int create_post(int user_id, const std::string& content) {
+    // Write to master
+    int post_id = master_db.insert_post(user_id, content);
+
+    // Store in cache for immediate read
+    std::string cache_key = "post:" + std::to_string(post_id);
+    cache.set(cache_key, content, 60);  // TTL: 60 seconds
+
+    // Subsequent reads check cache first
+    return post_id;
+}
+
+std::optional<std::string> get_post(int post_id) {
+    // Try cache first (recent writes)
+    std::string cache_key = "post:" + std::to_string(post_id);
+    auto cached = cache.get(cache_key);
+    if (cached.has_value()) {
+        return cached;
+    }
+
+    // Fall back to replica
+    return replica_db.get_post(post_id);
+}
+```
+
+```java
+import java.util.Optional;
+
+public class PostService {
+    private final MasterDB masterDb;
+    private final ReplicaDB replicaDb;
+    private final Cache cache;
+
+    public PostService(MasterDB masterDb, ReplicaDB replicaDb, Cache cache) {
+        this.masterDb = masterDb;
+        this.replicaDb = replicaDb;
+        this.cache = cache;
+    }
+
+    // Read your own writes pattern
+    public int createPost(int userId, String content) {
+        // Write to master
+        int postId = masterDb.insertPost(userId, content);
+
+        // Store in cache for immediate read
+        String cacheKey = "post:" + postId;
+        cache.set(cacheKey, content, 60);  // TTL: 60 seconds
+
+        // Subsequent reads check cache first
+        return postId;
+    }
+
+    public Optional<String> getPost(int postId) {
+        // Try cache first (recent writes)
+        String cacheKey = "post:" + postId;
+        Optional<String> cached = cache.get(cacheKey);
+        if (cached.isPresent()) {
+            return cached;
+        }
+
+        // Fall back to replica
+        return replicaDb.getPost(postId);
+    }
+}
+```
+:::
 
 ### 2. Master-Master Replication (Multi-Primary)
 
@@ -653,6 +731,7 @@ Shard 4: user_id 7.5M-10M
 **Sharding Strategies:**
 
 #### a) Range-Based Sharding
+:::multilang
 ```python
 def get_shard(user_id):
     if user_id <= 2_500_000:
@@ -665,6 +744,39 @@ def get_shard(user_id):
         return "shard_4"
 ```
 
+```cpp
+#include <string>
+
+std::string get_shard(int user_id) {
+    if (user_id <= 2500000) {
+        return "shard_1";
+    } else if (user_id <= 5000000) {
+        return "shard_2";
+    } else if (user_id <= 7500000) {
+        return "shard_3";
+    } else {
+        return "shard_4";
+    }
+}
+```
+
+```java
+public class ShardRouter {
+    public String getShard(int userId) {
+        if (userId <= 2_500_000) {
+            return "shard_1";
+        } else if (userId <= 5_000_000) {
+            return "shard_2";
+        } else if (userId <= 7_500_000) {
+            return "shard_3";
+        } else {
+            return "shard_4";
+        }
+    }
+}
+```
+:::
+
 **Pros:**
 - Simple implementation
 - Range queries efficient within shard
@@ -676,10 +788,36 @@ def get_shard(user_id):
 - Recent data may be on same shard (temporal hotspot)
 
 #### b) Hash-Based Sharding
+:::multilang
 ```python
 def get_shard(user_id, num_shards=4):
     return f"shard_{hash(user_id) % num_shards + 1}"
 ```
+
+```cpp
+#include <string>
+#include <functional>
+
+std::string get_shard(int user_id, int num_shards = 4) {
+    std::hash<int> hash_fn;
+    int shard_num = (hash_fn(user_id) % num_shards) + 1;
+    return "shard_" + std::to_string(shard_num);
+}
+```
+
+```java
+public class HashShardRouter {
+    public String getShard(int userId, int numShards) {
+        int shardNum = (Math.abs(Integer.hashCode(userId)) % numShards) + 1;
+        return "shard_" + shardNum;
+    }
+
+    public String getShard(int userId) {
+        return getShard(userId, 4);  // Default: 4 shards
+    }
+}
+```
+:::
 
 **Pros:**
 - Even distribution
@@ -694,6 +832,7 @@ def get_shard(user_id, num_shards=4):
 #### c) Consistent Hashing (See dedicated section below)
 
 #### d) Directory-Based Sharding
+:::multilang
 ```python
 # Lookup table
 shard_directory = {
@@ -706,6 +845,51 @@ shard_directory = {
 def get_shard(user_id):
     return shard_directory.get(user_id)
 ```
+
+```cpp
+#include <string>
+#include <unordered_map>
+#include <optional>
+
+// Lookup table
+std::unordered_map<std::string, std::string> shard_directory = {
+    {"user_1", "shard_1"},
+    {"user_2", "shard_2"},
+    {"user_3", "shard_1"},
+    // ...
+};
+
+std::optional<std::string> get_shard(const std::string& user_id) {
+    auto it = shard_directory.find(user_id);
+    if (it != shard_directory.end()) {
+        return it->second;
+    }
+    return std::nullopt;
+}
+```
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+public class DirectoryShardRouter {
+    // Lookup table
+    private final Map<String, String> shardDirectory = new HashMap<>();
+
+    public DirectoryShardRouter() {
+        shardDirectory.put("user_1", "shard_1");
+        shardDirectory.put("user_2", "shard_2");
+        shardDirectory.put("user_3", "shard_1");
+        // ...
+    }
+
+    public Optional<String> getShard(String userId) {
+        return Optional.ofNullable(shardDirectory.get(userId));
+    }
+}
+```
+:::
 
 **Pros:**
 - Flexible routing
@@ -757,6 +941,7 @@ Shard Asia:     Users in Asia-Pacific
 ```
 
 **Routing:**
+:::multilang
 ```python
 region_mapping = {
     "US": "shard_us",
@@ -769,6 +954,49 @@ region_mapping = {
 def get_shard(user_country):
     return region_mapping.get(user_country, "shard_default")
 ```
+
+```cpp
+#include <string>
+#include <unordered_map>
+
+std::unordered_map<std::string, std::string> region_mapping = {
+    {"US", "shard_us"},
+    {"UK", "shard_eu"},
+    {"FR", "shard_eu"},
+    {"JP", "shard_asia"},
+    {"IN", "shard_asia"},
+};
+
+std::string get_shard(const std::string& user_country) {
+    auto it = region_mapping.find(user_country);
+    if (it != region_mapping.end()) {
+        return it->second;
+    }
+    return "shard_default";
+}
+```
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class GeoShardRouter {
+    private final Map<String, String> regionMapping = new HashMap<>();
+
+    public GeoShardRouter() {
+        regionMapping.put("US", "shard_us");
+        regionMapping.put("UK", "shard_eu");
+        regionMapping.put("FR", "shard_eu");
+        regionMapping.put("JP", "shard_asia");
+        regionMapping.put("IN", "shard_asia");
+    }
+
+    public String getShard(String userCountry) {
+        return regionMapping.getOrDefault(userCountry, "shard_default");
+    }
+}
+```
+:::
 
 **Benefits:**
 - Low latency (data close to users)
@@ -884,6 +1112,7 @@ S3 ←----+----→ S1
 ```
 
 **Algorithm:**
+:::multilang
 ```python
 class ConsistentHash:
     def __init__(self):
@@ -916,12 +1145,118 @@ class ConsistentHash:
         return self.ring[self.sorted_keys[0]]
 ```
 
+```cpp
+#include <map>
+#include <vector>
+#include <string>
+#include <functional>
+#include <algorithm>
+#include <optional>
+
+class ConsistentHash {
+private:
+    std::map<uint32_t, std::string> ring;  // hash_value -> server
+    std::vector<uint32_t> sorted_keys;
+
+    uint32_t hash_function(const std::string& key) {
+        std::hash<std::string> hash_fn;
+        return static_cast<uint32_t>(hash_fn(key));
+    }
+
+public:
+    void add_server(const std::string& server) {
+        uint32_t hash_val = hash_function(server);
+        ring[hash_val] = server;
+        sorted_keys.push_back(hash_val);
+        std::sort(sorted_keys.begin(), sorted_keys.end());
+    }
+
+    void remove_server(const std::string& server) {
+        uint32_t hash_val = hash_function(server);
+        ring.erase(hash_val);
+        sorted_keys.erase(
+            std::remove(sorted_keys.begin(), sorted_keys.end(), hash_val),
+            sorted_keys.end()
+        );
+    }
+
+    std::optional<std::string> get_server(const std::string& key) {
+        if (ring.empty()) {
+            return std::nullopt;
+        }
+
+        uint32_t hash_val = hash_function(key);
+
+        // Find first server clockwise
+        for (uint32_t server_hash : sorted_keys) {
+            if (server_hash >= hash_val) {
+                return ring[server_hash];
+            }
+        }
+
+        // Wrap around to first server
+        return ring[sorted_keys[0]];
+    }
+};
+```
+
+```java
+import java.util.*;
+
+public class ConsistentHash {
+    private final TreeMap<Integer, String> ring;  // hash_value -> server
+    private final List<Integer> sortedKeys;
+
+    public ConsistentHash() {
+        this.ring = new TreeMap<>();
+        this.sortedKeys = new ArrayList<>();
+    }
+
+    private int hashFunction(String key) {
+        return key.hashCode();
+    }
+
+    public void addServer(String server) {
+        int hashVal = hashFunction(server);
+        ring.put(hashVal, server);
+        sortedKeys.add(hashVal);
+        Collections.sort(sortedKeys);
+    }
+
+    public void removeServer(String server) {
+        int hashVal = hashFunction(server);
+        ring.remove(hashVal);
+        sortedKeys.remove(Integer.valueOf(hashVal));
+    }
+
+    public Optional<String> getServer(String key) {
+        if (ring.isEmpty()) {
+            return Optional.empty();
+        }
+
+        int hashVal = hashFunction(key);
+
+        // Find first server clockwise using TreeMap's ceilingEntry
+        Map.Entry<Integer, String> entry = ring.ceilingEntry(hashVal);
+
+        if (entry != null) {
+            return Optional.of(entry.getValue());
+        }
+
+        // Wrap around to first server
+        return Optional.of(ring.firstEntry().getValue());
+    }
+}
+```
+:::
+
 ### Virtual Nodes (VNodes)
 
 **Problem:** Uneven distribution with few physical nodes
 
 **Solution:** Each physical server gets multiple virtual nodes
 
+:::multilang
 ```python
 class ConsistentHashWithVNodes:
     def __init__(self, num_vnodes=150):
@@ -939,6 +1274,79 @@ class ConsistentHashWithVNodes:
 
         self.sorted_keys.sort()
 ```
+
+```cpp
+#include <map>
+#include <vector>
+#include <string>
+#include <functional>
+#include <algorithm>
+
+class ConsistentHashWithVNodes {
+private:
+    int num_vnodes;
+    std::map<uint32_t, std::string> ring;
+    std::vector<uint32_t> sorted_keys;
+
+    uint32_t hash_function(const std::string& key) {
+        std::hash<std::string> hash_fn;
+        return static_cast<uint32_t>(hash_fn(key));
+    }
+
+public:
+    ConsistentHashWithVNodes(int num_vnodes = 150)
+        : num_vnodes(num_vnodes) {}
+
+    void add_server(const std::string& server) {
+        for (int i = 0; i < num_vnodes; i++) {
+            // Create virtual node
+            std::string vnode_key = server + ":vnode" + std::to_string(i);
+            uint32_t hash_val = hash_function(vnode_key);
+            ring[hash_val] = server;
+            sorted_keys.push_back(hash_val);
+        }
+
+        std::sort(sorted_keys.begin(), sorted_keys.end());
+    }
+};
+```
+
+```java
+import java.util.*;
+
+public class ConsistentHashWithVNodes {
+    private final int numVnodes;
+    private final TreeMap<Integer, String> ring;
+    private final List<Integer> sortedKeys;
+
+    public ConsistentHashWithVNodes(int numVnodes) {
+        this.numVnodes = numVnodes;
+        this.ring = new TreeMap<>();
+        this.sortedKeys = new ArrayList<>();
+    }
+
+    public ConsistentHashWithVNodes() {
+        this(150);  // Default: 150 virtual nodes
+    }
+
+    private int hashFunction(String key) {
+        return key.hashCode();
+    }
+
+    public void addServer(String server) {
+        for (int i = 0; i < numVnodes; i++) {
+            // Create virtual node
+            String vnodeKey = server + ":vnode" + i;
+            int hashVal = hashFunction(vnodeKey);
+            ring.put(hashVal, server);
+            sortedKeys.add(hashVal);
+        }
+
+        Collections.sort(sortedKeys);
+    }
+}
+```
+:::
 
 **Benefits of Virtual Nodes:**
 - More even distribution
@@ -1232,14 +1640,78 @@ Strong Consistency          Eventual Consistency
     - 10 bits: Auto-increment sequence
   - Guarantees: Time-sortable, unique across shards
 
+:::multilang
 ```python
+import time
+
+EPOCH = 1420070400000  # Custom epoch (e.g., Jan 1, 2015)
+
 def generate_photo_id(shard_id):
     timestamp = int(time.time() * 1000) - EPOCH
     sequence = get_next_sequence()
 
     photo_id = (timestamp << 23) | (shard_id << 10) | sequence
     return photo_id
+
+def get_next_sequence():
+    # Implementation would use atomic counter
+    # For demo, returning placeholder
+    return 0
 ```
+
+```cpp
+#include <chrono>
+#include <cstdint>
+
+const uint64_t EPOCH = 1420070400000ULL;  // Custom epoch (e.g., Jan 1, 2015)
+
+uint64_t get_next_sequence() {
+    // Implementation would use atomic counter
+    // For demo, returning placeholder
+    return 0;
+}
+
+uint64_t generate_photo_id(uint64_t shard_id) {
+    auto now = std::chrono::system_clock::now();
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch()
+    ).count();
+
+    uint64_t timestamp = millis - EPOCH;
+    uint64_t sequence = get_next_sequence();
+
+    uint64_t photo_id = (timestamp << 23) | (shard_id << 10) | sequence;
+    return photo_id;
+}
+```
+
+```java
+import java.util.concurrent.atomic.AtomicLong;
+
+public class PhotoIDGenerator {
+    private static final long EPOCH = 1420070400000L;  // Custom epoch (e.g., Jan 1, 2015)
+    private final AtomicLong sequence = new AtomicLong(0);
+
+    private long getNextSequence() {
+        // Use atomic counter for thread safety
+        long seq = sequence.incrementAndGet();
+        if (seq >= 1024) {  // 10 bits max (2^10 = 1024)
+            sequence.set(0);
+            seq = 0;
+        }
+        return seq;
+    }
+
+    public long generatePhotoId(long shardId) {
+        long timestamp = System.currentTimeMillis() - EPOCH;
+        long sequence = getNextSequence();
+
+        long photoId = (timestamp << 23) | (shardId << 10) | sequence;
+        return photoId;
+    }
+}
+```
+:::
 
 **Sharding Strategy:**
 - Range-based on user_id

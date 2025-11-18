@@ -423,6 +423,7 @@ Layer 7 Routing Examples:
 
 ### Load Balancer Health Checks
 
+:::multilang
 ```python
 # Health check configuration
 health_check = {
@@ -434,6 +435,53 @@ health_check = {
     "expected_status": 200
 }
 ```
+
+```cpp
+#include <string>
+
+// Health check configuration
+struct HealthCheckConfig {
+    int interval = 30;              // seconds
+    int timeout = 5;                // seconds
+    int unhealthy_threshold = 3;    // consecutive failures
+    int healthy_threshold = 2;      // consecutive successes
+    std::string path = "/health";
+    int expected_status = 200;
+};
+
+// Usage
+HealthCheckConfig health_check;
+```
+
+```java
+// Health check configuration
+public class HealthCheckConfig {
+    private int interval = 30;              // seconds
+    private int timeout = 5;                // seconds
+    private int unhealthyThreshold = 3;     // consecutive failures
+    private int healthyThreshold = 2;       // consecutive successes
+    private String path = "/health";
+    private int expectedStatus = 200;
+
+    // Getters and setters
+    public int getInterval() { return interval; }
+    public void setInterval(int interval) { this.interval = interval; }
+    public int getTimeout() { return timeout; }
+    public void setTimeout(int timeout) { this.timeout = timeout; }
+    public int getUnhealthyThreshold() { return unhealthyThreshold; }
+    public void setUnhealthyThreshold(int threshold) { this.unhealthyThreshold = threshold; }
+    public int getHealthyThreshold() { return healthyThreshold; }
+    public void setHealthyThreshold(int threshold) { this.healthyThreshold = threshold; }
+    public String getPath() { return path; }
+    public void setPath(String path) { this.path = path; }
+    public int getExpectedStatus() { return expectedStatus; }
+    public void setExpectedStatus(int status) { this.expectedStatus = status; }
+}
+
+// Usage
+HealthCheckConfig healthCheck = new HealthCheckConfig();
+```
+:::
 
 ---
 
@@ -684,6 +732,7 @@ Write Flow:
 **Best For**: Read-heavy applications, user sessions, product catalogs
 
 **Implementation**:
+:::multilang
 ```python
 def get_user(user_id):
     # 1. Try cache
@@ -707,6 +756,93 @@ def update_user(user_id, data):
     # 2. Invalidate cache
     cache.delete(f"user:{user_id}")
 ```
+
+```cpp
+#include <string>
+#include <optional>
+#include <memory>
+
+// Assuming cache and database are global or injected dependencies
+extern Cache cache;
+extern Database database;
+
+// Get user with cache-aside pattern
+std::optional<User> get_user(int user_id) {
+    // 1. Try cache
+    std::string cache_key = "user:" + std::to_string(user_id);
+    auto user = cache.get(cache_key);
+
+    if (user.has_value()) {
+        return user;  // Cache hit
+    }
+
+    // 2. Cache miss - fetch from DB
+    auto db_user = database.get_user(user_id);
+
+    if (db_user.has_value()) {
+        // 3. Store in cache
+        cache.set(cache_key, db_user.value(), 3600);  // TTL: 3600 seconds
+    }
+
+    return db_user;
+}
+
+// Update user and invalidate cache
+void update_user(int user_id, const UserData& data) {
+    // 1. Update database
+    database.update_user(user_id, data);
+
+    // 2. Invalidate cache
+    std::string cache_key = "user:" + std::to_string(user_id);
+    cache.remove(cache_key);
+}
+```
+
+```java
+import java.util.Optional;
+
+public class UserService {
+    private final Cache cache;
+    private final Database database;
+
+    public UserService(Cache cache, Database database) {
+        this.cache = cache;
+        this.database = database;
+    }
+
+    // Get user with cache-aside pattern
+    public Optional<User> getUser(int userId) {
+        // 1. Try cache
+        String cacheKey = "user:" + userId;
+        Optional<User> user = cache.get(cacheKey);
+
+        if (user.isPresent()) {
+            return user;  // Cache hit
+        }
+
+        // 2. Cache miss - fetch from DB
+        user = database.getUser(userId);
+
+        if (user.isPresent()) {
+            // 3. Store in cache
+            cache.set(cacheKey, user.get(), 3600);  // TTL: 3600 seconds
+        }
+
+        return user;
+    }
+
+    // Update user and invalidate cache
+    public void updateUser(int userId, UserData data) {
+        // 1. Update database
+        database.updateUser(userId, data);
+
+        // 2. Invalidate cache
+        String cacheKey = "user:" + userId;
+        cache.delete(cacheKey);
+    }
+}
+```
+:::
 
 #### 2. Read-Through Cache
 
@@ -799,6 +935,7 @@ Write Flow:
 **Best For**: Applications requiring strong consistency, financial systems
 
 **Implementation**:
+:::multilang
 ```python
 def update_user(user_id, data):
     # Write to cache
@@ -809,6 +946,51 @@ def update_user(user_id, data):
 
     return data
 ```
+
+```cpp
+#include <string>
+
+// Assuming cache and database are global or injected dependencies
+extern Cache cache;
+extern Database database;
+
+// Write-through cache update
+UserData update_user(int user_id, const UserData& data) {
+    // Write to cache
+    std::string cache_key = "user:" + std::to_string(user_id);
+    cache.set(cache_key, data);
+
+    // Synchronously write to database
+    database.update_user(user_id, data);
+
+    return data;
+}
+```
+
+```java
+public class UserService {
+    private final Cache cache;
+    private final Database database;
+
+    public UserService(Cache cache, Database database) {
+        this.cache = cache;
+        this.database = database;
+    }
+
+    // Write-through cache update
+    public UserData updateUser(int userId, UserData data) {
+        // Write to cache
+        String cacheKey = "user:" + userId;
+        cache.set(cacheKey, data);
+
+        // Synchronously write to database
+        database.updateUser(userId, data);
+
+        return data;
+    }
+}
+```
+:::
 
 #### 4. Write-Back (Write-Behind) Cache
 
@@ -851,6 +1033,7 @@ Write Flow:
 **Best For**: Write-heavy applications, analytics, logging, social media
 
 **Implementation Considerations**:
+:::multilang
 ```python
 # Write-back queue
 write_queue = []
@@ -874,6 +1057,140 @@ def flush_writes():
             write_queue = write_queue[BATCH_SIZE:]
         time.sleep(1)
 ```
+
+```cpp
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <chrono>
+#include <vector>
+
+// Assuming cache and database are global or injected dependencies
+extern Cache cache;
+extern Database database;
+
+// Thread-safe write queue
+std::queue<std::pair<int, UserData>> write_queue;
+std::mutex queue_mutex;
+
+const int BATCH_SIZE = 100;
+const int MAX_DELAY_MS = 1000;
+
+// Write-back update
+UserData update_user(int user_id, const UserData& data) {
+    // 1. Write to cache immediately
+    std::string cache_key = "user:" + std::to_string(user_id);
+    cache.set(cache_key, data);
+
+    // 2. Queue for async DB write
+    {
+        std::lock_guard<std::mutex> lock(queue_mutex);
+        write_queue.push({user_id, data});
+    }
+
+    // Immediate return
+    return data;
+}
+
+// Background worker
+void flush_writes() {
+    while (true) {
+        std::vector<std::pair<int, UserData>> batch;
+
+        {
+            std::lock_guard<std::mutex> lock(queue_mutex);
+            int count = std::min(BATCH_SIZE, (int)write_queue.size());
+
+            for (int i = 0; i < count; i++) {
+                batch.push_back(write_queue.front());
+                write_queue.pop();
+            }
+        }
+
+        if (!batch.empty()) {
+            database.batch_update(batch);
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+```
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+public class WriteBackCache {
+    private final Cache cache;
+    private final Database database;
+    private final BlockingQueue<UserUpdate> writeQueue;
+
+    private static final int BATCH_SIZE = 100;
+    private static final int MAX_DELAY_MS = 1000;
+
+    public WriteBackCache(Cache cache, Database database) {
+        this.cache = cache;
+        this.database = database;
+        this.writeQueue = new LinkedBlockingQueue<>();
+
+        // Start background worker
+        new Thread(this::flushWrites).start();
+    }
+
+    // Write-back update
+    public UserData updateUser(int userId, UserData data) {
+        // 1. Write to cache immediately
+        String cacheKey = "user:" + userId;
+        cache.set(cacheKey, data);
+
+        // 2. Queue for async DB write
+        writeQueue.offer(new UserUpdate(userId, data));
+
+        // Immediate return
+        return data;
+    }
+
+    // Background worker
+    private void flushWrites() {
+        while (true) {
+            try {
+                List<UserUpdate> batch = new ArrayList<>();
+
+                // Collect batch
+                while (batch.size() < BATCH_SIZE && !writeQueue.isEmpty()) {
+                    UserUpdate update = writeQueue.poll();
+                    if (update != null) {
+                        batch.add(update);
+                    }
+                }
+
+                // Write batch to database
+                if (!batch.isEmpty()) {
+                    database.batchUpdate(batch);
+                }
+
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
+    private static class UserUpdate {
+        final int userId;
+        final UserData data;
+
+        UserUpdate(int userId, UserData data) {
+            this.userId = userId;
+            this.data = data;
+        }
+    }
+}
+```
+:::
 
 #### 5. Write-Around Cache
 

@@ -5,9 +5,19 @@ This document traces the step-by-step execution of singleton pattern implementat
 ## Scenario 1: Basic Singleton - First Access
 
 **Code:**
+:::multilang
 ```python
 db1 = DatabaseConnection.get_instance()
 ```
+
+```cpp
+DatabaseConnection* db1 = DatabaseConnection::getInstance();
+```
+
+```java
+DatabaseConnection db1 = DatabaseConnection.getInstance();
+```
+:::
 
 ### Initial State
 ```

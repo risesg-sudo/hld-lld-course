@@ -25,33 +25,94 @@ A class should have only ONE reason to change. Each class should have a single, 
 
 ### Before SRP
 
+:::multilang
 ```python
 class User:
     def __init__(self, name, email):
         self.name = name
         self.email = email
-        
+
     def validate_email(self):
         # Email validation logic
         pass
-        
+
     def save_to_database(self):
         # Database logic
         pass
-        
+
     def send_welcome_email(self):
         # Email sending logic
         pass
-        
+
     def log_activity(self):
         # Logging logic
         pass
 ```
 
+```cpp
+#include <string>
+
+class User {
+private:
+    std::string name;
+    std::string email;
+
+public:
+    User(const std::string& name, const std::string& email)
+        : name(name), email(email) {}
+
+    void validateEmail() {
+        // Email validation logic
+    }
+
+    void saveToDatabase() {
+        // Database logic
+    }
+
+    void sendWelcomeEmail() {
+        // Email sending logic
+    }
+
+    void logActivity() {
+        // Logging logic
+    }
+};
+```
+
+```java
+public class User {
+    private String name;
+    private String email;
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public void validateEmail() {
+        // Email validation logic
+    }
+
+    public void saveToDatabase() {
+        // Database logic
+    }
+
+    public void sendWelcomeEmail() {
+        // Email sending logic
+    }
+
+    public void logActivity() {
+        // Logging logic
+    }
+}
+```
+:::
+
 One class, four responsibilities!
 
 ### After SRP
 
+:::multilang
 ```python
 class User:
     def __init__(self, name, email):
@@ -78,6 +139,94 @@ class Logger:
         # Logging logic
         pass
 ```
+
+```cpp
+#include <string>
+#include <memory>
+
+class User {
+private:
+    std::string name;
+    std::string email;
+
+public:
+    User(const std::string& name, const std::string& email)
+        : name(name), email(email) {}
+
+    std::string getName() const { return name; }
+    std::string getEmail() const { return email; }
+};
+
+class EmailValidator {
+public:
+    bool validate(const std::string& email) {
+        // Validation logic
+        return true;
+    }
+};
+
+class UserRepository {
+public:
+    void save(const User& user) {
+        // Database logic
+    }
+};
+
+class EmailService {
+public:
+    void sendWelcome(const User& user) {
+        // Email logic
+    }
+};
+
+class Logger {
+public:
+    void log(const std::string& message) {
+        // Logging logic
+    }
+};
+```
+
+```java
+public class User {
+    private String name;
+    private String email;
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+}
+
+public class EmailValidator {
+    public boolean validate(String email) {
+        // Validation logic
+        return true;
+    }
+}
+
+public class UserRepository {
+    public void save(User user) {
+        // Database logic
+    }
+}
+
+public class EmailService {
+    public void sendWelcome(User user) {
+        // Email logic
+    }
+}
+
+public class Logger {
+    public void log(String message) {
+        // Logging logic
+    }
+}
+```
+:::
 
 Each class has one responsibility!
 
